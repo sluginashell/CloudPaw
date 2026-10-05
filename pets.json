@@ -1,0 +1,8 @@
+[
+  { "id": 1, "name": "Luna",   "species": "Dog",   "breed": "Labrador Retriever", "age": 2, "location": "Coldspring, TX", "image": "images/luna.jpg" },
+  { "id": 2, "name": "Milo",   "species": "Cat",   "breed": "Tabby",              "age": 3, "location": "Houston, TX",   "image": "images/milo.jpg" },
+  { "id": 3, "name": "Bella",  "species": "Dog",   "breed": "Beagle",             "age": 1, "location": "Austin, TX",    "image": "images/bella.jpg" },
+  { "id": 4, "name": "Oliver", "species": "Cat",   "breed": "Maine Coon",         "age": 4, "location": "Dallas, TX",    "image": "images/oliver.jpg" },
+  { "id": 5, "name": "Charlie","species": "Dog",   "breed": "Golden Retriever",   "age": 5, "location": "San Antonio, TX","image": "images/charlie.jpg" },
+  { "id": 6, "name": "Sadie",  "species": "Dog",   "breed": "Border Collie",      "age": 2, "location": "Bryan, TX",     "image": "images/sadie.jpg" }
+]

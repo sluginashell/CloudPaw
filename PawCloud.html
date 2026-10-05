@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PawCloud — a cloud-powered pet adoption platform connecting shelters with adopters." />
+  <title>PawCloud | Pet Adoption</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="/" aria-label="PawCloud home">
+        <img src="images/logo.jpg" alt="" width="48" height="48" />
+        <span class="logo-text">PawCloud</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul id="nav-menu" class="nav-links">
+        <li><a href="/" aria-current="page">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+        <li><a href="#pets">Search Available Pets</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-ghost" type="button" data-action="login">Sign In</button>
+        <button class="btn btn-primary" type="button" data-action="list-pet">List a Pet</button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <h1 id="hero-heading">Find your new best friend</h1>
+        <p>Browse adoptable pets from shelters and rescues near you.</p>
+        <form class="search-form" role="search" id="search-form">
+          <label class="visually-hidden" for="search-input">Search pets</label>
+          <input
+            id="search-input"
+            name="q"
+            type="search"
+            placeholder="Search by name, breed, or species…"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="pets" class="pet-section" aria-labelledby="pets-heading">
+      <header class="section-header">
+        <h2 id="pets-heading">Available Pets</h2>
+        <p class="muted">Listings update live from our cloud backend.</p>
+      </header>
+
+      <div id="pet-list" class="pet-grid" aria-live="polite" aria-busy="false">
+        <!-- Pet cards rendered by script.js -->
+      </div>
+
+      <p id="pet-status" class="status" role="status"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="footer-inner">
+      <div>
+        <h3>PawCloud</h3>
+        <p class="muted">A cloud-native pet adoption platform built on AWS.</p>
+      </div>
+      <div id="about">
+        <h4>About</h4>
+        <ul>
+          <li><a href="#">Our Mission</a></li>
+          <li><a href="#">For Shelters</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@pawcloud.example">hello@pawcloud.example</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> PawCloud. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

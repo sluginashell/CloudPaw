@@ -1,0 +1,9 @@
+.
+├── index.html
+├── style.css
+├── script.js
+├── pets.json
+├── images/
+│   ├── logo.jpg
+│   └── ...
+└── README.md
