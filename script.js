@@ -1,9 +1,9 @@
 /* =============================================================================
-   PawCloud — front-end controller
+   CloudPaw — front-end controller
    Fetches pet listings from a configurable API endpoint.
    Locally: reads ./pets.json
    In AWS:  point API_BASE at your API Gateway invoke URL.
-   ========================================================================== */
+   ============================================================================= */
 
 const CONFIG = {
   // Change this to your API Gateway URL after deploying the backend,
@@ -25,15 +25,20 @@ const els = {
 
 /* ---------- Utilities ---------- */
 const escapeHtml = (str = "") =>
-  str.replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  String(str).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
   }[c]));
 
 const setStatus = (msg = "") => {
-  els.petStatus.textContent = msg;
+  if (els.petStatus) els.petStatus.textContent = msg;
 };
 
 const setBusy = (busy) => {
+  if (!els.petList) return;
   els.petList.setAttribute("aria-busy", String(busy));
   if (busy) {
     els.petList.innerHTML = Array.from({ length: 6 })
@@ -55,7 +60,7 @@ async function fetchPets(query = "") {
 
 /* ---------- Rendering ---------- */
 function renderPets(pets) {
-  if (!pets.length) {
+  if (!Array.isArray(pets) || pets.length === 0) {
     els.petList.innerHTML = "";
     setStatus("No pets match your search. Try a different term.");
     return;
