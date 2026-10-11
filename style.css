@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PawCloud — Design tokens
+   CloudPaw — Design tokens
    ========================================================================== */
 :root {
   /* Color */
@@ -31,11 +31,6 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: 200ms ease;
-}
-
-/* Optional: honor OS dark mode later — architecture ready. */
-@media (prefers-color-scheme: dark) {
-  /* Kept light for the portfolio screenshot; extend in a future iteration. */
 }
 
 /* ==========================================================================
