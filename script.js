@@ -23,6 +23,8 @@ const els = {
   year: document.getElementById("year"),
 };
 
+const PLACEHOLDER_IMAGE = "images/placeholder.svg";
+
 /* ---------- Utilities ---------- */
 const escapeHtml = (str = "") =>
   String(str).replace(/[&<>"']/g, (c) => ({
@@ -55,8 +57,26 @@ async function fetchPets(query = "") {
 
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to load pets (${res.status})`);
-  return res.json();
+  const pets = await res.json();
+
+  // The API filters server-side; local JSON has to be filtered here.
+  return CONFIG.USE_LOCAL_DATA ? filterPets(pets, query) : pets;
 }
+
+function filterPets(pets, query = "") {
+  const q = query.toLowerCase();
+  if (!q) return pets;
+  return pets.filter((pet) =>
+    [pet.name, pet.breed, pet.species, pet.location]
+      .some((field) => String(field || "").toLowerCase().includes(q))
+  );
+}
+
+const formatAge = (age) => {
+  if (typeof age !== "number") return "Age unknown";
+  if (age < 1) return "Under 1 yr";
+  return `${age} ${age === 1 ? "yr" : "yrs"}`;
+};
 
 /* ---------- Rendering ---------- */
 function renderPets(pets) {
@@ -72,14 +92,14 @@ function renderPets(pets) {
       <article class="pet-card">
         <img
           class="pet-card__image"
-          src="${escapeHtml(pet.image || "images/placeholder.jpg")}"
+          src="${escapeHtml(pet.image || PLACEHOLDER_IMAGE)}"
           alt="${escapeHtml(pet.name)} the ${escapeHtml(pet.species)}"
           loading="lazy"
         />
         <div class="pet-card__body">
           <h3 class="pet-card__name">${escapeHtml(pet.name)}</h3>
           <p class="pet-card__meta">
-            ${escapeHtml(pet.species)} · ${escapeHtml(pet.breed || "Mixed")} · ${escapeHtml(String(pet.age || ""))}
+            ${escapeHtml(pet.species)} · ${escapeHtml(pet.breed || "Mixed")} · ${escapeHtml(formatAge(pet.age))}
           </p>
           <p class="pet-card__meta">${escapeHtml(pet.location || "")}</p>
           <button class="btn btn-primary pet-card__cta" type="button"
@@ -122,6 +142,18 @@ els.petList?.addEventListener("click", (e) => {
   // Wire this to your inquiry API later.
   alert(`Inquiry flow for pet #${btn.dataset.petId} coming soon.`);
 });
+
+// Swap in the placeholder when a pet photo is missing. Image errors don't
+// bubble, so listen in the capture phase.
+els.petList?.addEventListener(
+  "error",
+  (e) => {
+    const img = e.target;
+    if (img.tagName !== "IMG" || img.src.endsWith(PLACEHOLDER_IMAGE)) return;
+    img.src = PLACEHOLDER_IMAGE;
+  },
+  true
+);
 
 els.navToggle?.addEventListener("click", () => {
   const open = els.navLinks.classList.toggle("is-open");
