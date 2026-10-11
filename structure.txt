@@ -1,9 +1,22 @@
 .
-├── index.html
-├── style.css
-├── script.js
-├── pets.json
+├── index.html          (home, featured pets)
+├── pets.html           (all pets, search and filter)
+├── pet.html            (single pet, pet.html?id=1)
+├── adopt.html          (adoption application)
+├── about.html          (about, team, contact)
+├── css/
+│   └── style.css
+├── js/
+│   └── script.js
+├── data/
+│   └── pets.json
 ├── images/
-│   ├── logo.jpg
-│   └── ...
+│   ├── logo.jpg            (to add)
+│   ├── placeholder.svg
+│   └── pets/
+│       ├── luna.jpg        (to add, one photo per pet in data/pets.json)
+│       └── ...
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml
 └── README.md

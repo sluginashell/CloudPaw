@@ -108,6 +108,10 @@ a:hover {
    Buttons
    ========================================================================== */
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font: inherit;
   font-weight: 500;
   border: 1px solid transparent;
@@ -123,6 +127,7 @@ a:hover {
 }
 .btn-primary:hover {
   background: var(--color-primary-hover);
+  color: #fff;
 }
 
 .btn-ghost {
@@ -396,6 +401,263 @@ a:hover {
 }
 
 /* ==========================================================================
+   Nav: current page
+   ========================================================================== */
+.nav-links a[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Inner page header (pets, pet, adopt, about)
+   ========================================================================== */
+.page-header {
+  background: linear-gradient(135deg, #eff6ff 0%, #fef3c7 100%);
+  padding: var(--space-5) var(--space-4);
+}
+
+.page-header__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin-bottom: var(--space-2);
+}
+
+.page-header p {
+  color: var(--color-muted);
+}
+
+.section-link {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Pet filters (pets.html)
+   ========================================================================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-5);
+}
+
+.filters input,
+.filters select {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font: inherit;
+  background: #fff;
+}
+
+.filters input {
+  flex: 1 1 240px;
+}
+
+/* ==========================================================================
+   Pet detail (pet.html)
+   ========================================================================== */
+.pet-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.pet-detail__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+
+.pet-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.pet-detail__body h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.eyebrow {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+.facts dt {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.facts dd {
+  font-weight: 500;
+}
+
+.back-link {
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Forms (adopt.html, about.html)
+   ========================================================================== */
+.form-card {
+  max-width: 720px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field label,
+.field legend {
+  font-weight: 500;
+}
+
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.field textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.field input:user-invalid,
+.field select:user-invalid,
+.field textarea:user-invalid {
+  border-color: #dc2626;
+}
+
+.field--check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.field--check input {
+  margin-top: 0.3rem;
+}
+
+.form-actions {
+  margin-top: var(--space-4);
+}
+
+.required {
+  color: #dc2626;
+}
+
+.notice {
+  max-width: 720px;
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+
+.notice h2 {
+  margin-bottom: var(--space-2);
+}
+
+/* ==========================================================================
+   About page
+   ========================================================================== */
+.content-section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+}
+
+.content-section h2 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-3);
+}
+
+.content-section p + p {
+  margin-top: var(--space-3);
+}
+
+.prose {
+  max-width: 720px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.team-card {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.contact-info {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 @media (max-width: 768px) {
@@ -437,5 +699,15 @@ a:hover {
 
   .search-form {
     flex-direction: column;
+  }
+
+  .pet-detail,
+  .contact-layout,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    padding: var(--space-4);
   }
 }

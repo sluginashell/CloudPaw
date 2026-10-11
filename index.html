@@ -12,15 +12,15 @@
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body data-page="home">
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
-      <a class="logo" href="./" aria-label="CloudPaw home">
-        <img src="images/logo.jpg" alt="" width="48" height="48" />
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
         <span class="logo-text">CloudPaw</span>
       </a>
 
@@ -34,10 +34,10 @@
       </button>
 
       <ul id="nav-menu" class="nav-links">
-        <li><a href="./" aria-current="page">Home</a></li>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#contact">Contact Us</a></li>
-        <li><a href="#pets">Search Available Pets</a></li>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="about.html#contact">Contact Us</a></li>
       </ul>
 
       <div class="nav-actions">
@@ -52,7 +52,7 @@
       <div class="hero-content">
         <h1 id="hero-heading">Find your new best friend</h1>
         <p>Browse adoptable pets from shelters and rescues near you.</p>
-        <form class="search-form" role="search" id="search-form">
+        <form class="search-form" role="search" action="pets.html" method="get">
           <label class="visually-hidden" for="search-input">Search pets</label>
           <input
             id="search-input"
@@ -68,43 +68,43 @@
 
     <section id="pets" class="pet-section" aria-labelledby="pets-heading">
       <header class="section-header">
-        <h2 id="pets-heading">Available Pets</h2>
-        <p class="muted">Listings update live from our cloud backend.</p>
+        <h2 id="pets-heading">Featured Pets</h2>
+        <a class="section-link" href="pets.html">See all pets →</a>
       </header>
 
-      <div id="pet-list" class="pet-grid" aria-live="polite" aria-busy="false">
-        <!-- Pet cards rendered by script.js -->
+      <div id="pet-list" class="pet-grid" data-limit="3" aria-live="polite" aria-busy="false">
+        <!-- Pet cards rendered by js/script.js -->
       </div>
 
       <p id="pet-status" class="status" role="status"></p>
     </section>
   </main>
 
-  <footer class="site-footer" id="contact">
+  <footer class="site-footer">
     <div class="footer-inner">
       <div>
         <h3>CloudPaw</h3>
         <p class="muted">A cloud-native pet adoption platform built on AWS.</p>
       </div>
-      <div id="about">
+      <div>
         <h4>About</h4>
         <ul>
-          <li><a href="#">Our Mission</a></li>
-          <li><a href="#">For Shelters</a></li>
-          <li><a href="#">Privacy</a></li>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#shelters">For Shelters</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
           <li><a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a></li>
-          <li><a href="#">Support</a></li>
+          <li><a href="about.html#contact">Send us a message</a></li>
         </ul>
       </div>
     </div>
     <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
   </footer>
 
-  <script src="script.js" defer></script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
