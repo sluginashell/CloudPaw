@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Apply to adopt a pet through CloudPaw." />
+  <title>Adoption Application | CloudPaw</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="adopt">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
+        <span class="logo-text">CloudPaw</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul id="nav-menu" class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="about.html#contact">Contact Us</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-ghost" type="button" data-action="login">Sign In</button>
+        <button class="btn btn-primary" type="button" data-action="list-pet">List a Pet</button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header" aria-labelledby="page-heading">
+      <div class="page-header__inner">
+        <h1 id="page-heading">Adoption Application</h1>
+        <p>Tell us a little about yourself. The shelter will contact you within 2–3 business days.</p>
+      </div>
+    </section>
+
+    <section class="pet-section" aria-label="Application form">
+      <form id="adopt-form" class="form-card" novalidate>
+        <div class="form-grid">
+          <div class="field field--full">
+            <label for="adopt-pet">Pet you'd like to adopt <span class="required" aria-hidden="true">*</span></label>
+            <select id="adopt-pet" name="petId" required>
+              <option value="">Choose a pet…</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="adopt-name">Full name <span class="required" aria-hidden="true">*</span></label>
+            <input id="adopt-name" name="name" type="text" autocomplete="name" required />
+          </div>
+
+          <div class="field">
+            <label for="adopt-email">Email <span class="required" aria-hidden="true">*</span></label>
+            <input id="adopt-email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label for="adopt-phone">Phone <span class="required" aria-hidden="true">*</span></label>
+            <input id="adopt-phone" name="phone" type="tel" autocomplete="tel" required />
+          </div>
+
+          <div class="field">
+            <label for="adopt-city">City <span class="required" aria-hidden="true">*</span></label>
+            <input id="adopt-city" name="city" type="text" autocomplete="address-level2" required />
+          </div>
+
+          <div class="field">
+            <label for="adopt-housing">Housing <span class="required" aria-hidden="true">*</span></label>
+            <select id="adopt-housing" name="housing" required>
+              <option value="">Choose one…</option>
+              <option>House</option>
+              <option>Apartment</option>
+              <option>Condo / Townhouse</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="adopt-yard">Fenced yard?</label>
+            <select id="adopt-yard" name="yard">
+              <option value="">Choose one…</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <div class="field field--full">
+            <label for="adopt-pets">Other pets at home</label>
+            <textarea id="adopt-pets" name="otherPets" placeholder="Species, age, and temperament of any current pets"></textarea>
+          </div>
+
+          <div class="field field--full">
+            <label for="adopt-why">Why is this pet a good fit for you? <span class="required" aria-hidden="true">*</span></label>
+            <textarea id="adopt-why" name="reason" required></textarea>
+          </div>
+
+          <div class="field field--full field--check">
+            <input id="adopt-agree" name="agree" type="checkbox" value="yes" required />
+            <label for="adopt-agree">I confirm the information above is accurate and agree to a home check if required. <span class="required" aria-hidden="true">*</span></label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Submit application</button>
+        </div>
+        <p id="adopt-status" class="status" role="status"></p>
+      </form>
+
+      <div id="adopt-success" class="notice" tabindex="-1" hidden>
+        <h2>Application received!</h2>
+        <p>Thanks for applying to adopt <strong id="adopt-success-pet">your pet</strong>. The shelter will be in touch soon.</p>
+        <p><a class="back-link" href="pets.html">Browse more pets</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h3>CloudPaw</h3>
+        <p class="muted">A cloud-native pet adoption platform built on AWS.</p>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#shelters">For Shelters</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a></li>
+          <li><a href="about.html#contact">Send us a message</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
+  </footer>
+
+  <script src="js/script.js" defer></script>
+</body>
+</html>

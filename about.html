@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn about CloudPaw and get in touch with our team." />
+  <title>About and Contact | CloudPaw</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="about">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
+        <span class="logo-text">CloudPaw</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul id="nav-menu" class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html" aria-current="page">About Us</a></li>
+        <li><a href="about.html#contact">Contact Us</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-ghost" type="button" data-action="login">Sign In</button>
+        <button class="btn btn-primary" type="button" data-action="list-pet">List a Pet</button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="page-header" aria-labelledby="page-heading">
+      <div class="page-header__inner">
+        <h1 id="page-heading">About CloudPaw</h1>
+        <p>Connecting shelters and rescues with people ready to adopt.</p>
+      </div>
+    </section>
+
+    <section id="mission" class="content-section" aria-labelledby="mission-heading">
+      <div class="prose">
+        <h2 id="mission-heading">Our Mission</h2>
+        <p>Every year, millions of pets wait in shelters for a home. CloudPaw makes it easier for adopters to find them by bringing listings from shelters and rescues into one simple, searchable place.</p>
+        <p>We believe adopting should be quick, transparent, and stress-free for families and for the shelters doing the hard work.</p>
+      </div>
+    </section>
+
+    <section id="shelters" class="content-section" aria-labelledby="shelters-heading">
+      <div class="prose">
+        <h2 id="shelters-heading">For Shelters</h2>
+        <p>Shelters and rescues can list pets for free, keep listings up to date, and receive adoption applications in one place. Get in touch below to set up an account.</p>
+      </div>
+    </section>
+
+    <section id="team" class="content-section" aria-labelledby="team-heading">
+      <h2 id="team-heading">Our Team</h2>
+      <p class="muted">CloudPaw is a CLOUD 495 capstone project at Franklin University.</p>
+      <ul class="team-grid">
+        <li class="team-card">
+          <h3>Shelley Baker</h3>
+          <p class="muted">Team member</p>
+        </li>
+        <li class="team-card">
+          <h3>Safia Dad</h3>
+          <p class="muted">Team member</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="contact" class="content-section" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Contact Us</h2>
+      <div class="contact-layout">
+        <ul class="contact-info">
+          <li>
+            <strong>Email</strong><br />
+            <a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a>
+          </li>
+          <li>
+            <strong>Response time</strong><br />
+            <span class="muted">Usually within 1–2 business days</span>
+          </li>
+        </ul>
+
+        <div>
+          <form id="contact-form" class="form-card" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="contact-name">Name <span class="required" aria-hidden="true">*</span></label>
+                <input id="contact-name" name="name" type="text" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="contact-email">Email <span class="required" aria-hidden="true">*</span></label>
+                <input id="contact-email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="field field--full">
+                <label for="contact-message">Message <span class="required" aria-hidden="true">*</span></label>
+                <textarea id="contact-message" name="message" required></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Send message</button>
+            </div>
+            <p id="contact-status" class="status" role="status"></p>
+          </form>
+
+          <div id="contact-success" class="notice" tabindex="-1" hidden>
+            <h2>Message sent!</h2>
+            <p>Thanks for reaching out. We'll get back to you soon.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h3>CloudPaw</h3>
+        <p class="muted">A cloud-native pet adoption platform built on AWS.</p>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#shelters">For Shelters</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a></li>
+          <li><a href="about.html#contact">Send us a message</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
+  </footer>
+
+  <script src="js/script.js" defer></script>
+</body>
+</html>
