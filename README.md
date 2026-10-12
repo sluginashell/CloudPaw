@@ -1,7 +1,7 @@
 
 # CloudPaw
 
-A cloud-native pet adoption platform.
+A cloud-native pet adoption platform
 
 ## Team
 - Shelley Baker
