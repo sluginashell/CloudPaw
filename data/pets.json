@@ -1,14 +1,50 @@
 [
-  { "id": 1, "name": "Luna",    "species": "Dog", "breed": "Labrador Retriever", "age": 2, "sex": "Female", "location": "Coldspring, TX",  "image": "images/pets/luna.jpg",
-    "description": "Luna is a friendly, high-energy Lab who loves fetch, swimming, and meeting new people. She is house-trained and does well with kids." },
-  { "id": 2, "name": "Milo",    "species": "Cat", "breed": "Tabby",              "age": 3, "sex": "Male",   "location": "Houston, TX",     "image": "images/pets/milo.jpg",
-    "description": "Milo is a laid-back tabby who enjoys sunny windowsills and chin scratches. He gets along with other cats and is litter-trained." },
-  { "id": 3, "name": "Bella",   "species": "Dog", "breed": "Beagle",             "age": 1, "sex": "Female", "location": "Austin, TX",      "image": "images/pets/bella.jpg",
-    "description": "Bella is a curious young beagle with a great nose and a happy howl. She is learning basic commands and would love an active family." },
-  { "id": 4, "name": "Oliver",  "species": "Cat", "breed": "Maine Coon",         "age": 4, "sex": "Male",   "location": "Dallas, TX",      "image": "images/pets/oliver.jpg",
-    "description": "Oliver is a big, gentle Maine Coon with a fluffy coat and a calm personality. He follows his people from room to room." },
-  { "id": 5, "name": "Charlie", "species": "Dog", "breed": "Golden Retriever",   "age": 5, "sex": "Male",   "location": "San Antonio, TX", "image": "images/pets/charlie.jpg",
-    "description": "Charlie is a sweet, well-mannered golden who knows sit, stay, and shake. He is great with children and other dogs." },
-  { "id": 6, "name": "Sadie",   "species": "Dog", "breed": "Border Collie",      "age": 2, "sex": "Female", "location": "Bryan, TX",       "image": "images/pets/sadie.jpg",
-    "description": "Sadie is a smart, quick-learning border collie who needs daily exercise and a job to do. She would thrive with an experienced owner." }
+  {
+    "id": 1,
+    "name": "Luna",
+    "species": "Dog",
+    "breed": "Labrador Retriever",
+    "description": "Luna is a friendly, high-energy Lab who loves fetching tennis balls.",
+    "image": "images/pets/luna.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Milo",
+    "species": "Cat",
+    "breed": "Tabby",
+    "description": "Milo is a laid-back tabby who enjoys sunny windowsills and quiet naps.",
+    "image": "images/pets/milo.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Bella",
+    "species": "Dog",
+    "breed": "Beagle",
+    "description": "Bella is a curious young beagle with a great nose and a happy wagging tail.",
+    "image": "images/pets/bella.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Oliver",
+    "species": "Cat",
+    "breed": "Maine Coon",
+    "description": "Oliver is a big, gentle Maine Coon with a fluffy coat and a loud purr.",
+    "image": "images/pets/oliver.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Charlie",
+    "species": "Dog",
+    "breed": "Golden Retriever",
+    "description": "Charlie is a sweet, well-mannered golden who knows how to sit and stay.",
+    "image": "images/pets/charlie.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Sadie",
+    "species": "Dog",
+    "breed": "Border Collie",
+    "description": "Sadie is a smart, quick-learning border collie who loves a good puzzle.",
+    "image": "images/pets/sadie.jpg"
+  }
 ]

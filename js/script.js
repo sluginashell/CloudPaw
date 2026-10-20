@@ -95,7 +95,7 @@ const petCardHtml = (pet) => `
   <article class="pet-card">
     <img
       class="pet-card__image"
-      src="${escapeHtml(pet.image || PLACEHOLDER_IMAGE)}"
+      src="${escapeHtml(pet.photo_url || PLACEHOLDER_IMAGE)}"
       alt="${escapeHtml(pet.name)} the ${escapeHtml(pet.species)}"
       loading="lazy"
     />
@@ -116,7 +116,7 @@ const petDetailHtml = (pet) => `
   <article class="pet-detail">
     <img
       class="pet-detail__image"
-      src="${escapeHtml(pet.image || PLACEHOLDER_IMAGE)}"
+      src="${escapeHtml(pet.photo.url || PLACEHOLDER_IMAGE)}"
       alt="${escapeHtml(pet.name)} the ${escapeHtml(pet.species)}"
     />
     <div class="pet-detail__body">
