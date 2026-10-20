@@ -106,5 +106,43 @@
   </footer>
 
   <script src="js/script.js" defer></script>
+  <!-- Adoption Form Modal -->
+<div id="adoption-modal" class="modal" hidden>
+  <div class="modal-content">
+    <span class="close-btn" id="close-modal">&times;</span>
+    <h2>Adopt <span id="modal-pet-name"></span></h2>
+    <form id="adoption-form">
+      <!-- Hidden field for petId -->
+      <input type="hidden" id="form-pet-id" name="petId" />
+      
+      <label for="adopterName">Full Name</label>
+      <input type="text" id="adopterName" required />
+
+      <label for="adopterEmail">Email Address</label>
+      <input type="email" id="adopterEmail" required />
+
+      <label for="adopterPhone">Phone Number</label>
+      <input type="tel" id="adopterPhone" required />
+      
+      <label for="homeType">Home Type</label>
+      <select id="homeType" required>
+        <option value="House">House</option>
+        <option value="Apartment">Apartment</option>
+        <option value="Condo">Condo</option>
+      </select>
+      
+      <label for="hasOtherPets">Do you have other pets?</label>
+      <select id="hasOtherPets" required>
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+      </select>
+      
+      <label for="message">Why do you want to adopt?</label>
+      <textarea id="message" rows="4" required></textarea>
+      
+      <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Submit Application</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>

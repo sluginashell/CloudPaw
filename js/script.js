@@ -9,10 +9,8 @@
    ============================================================================= */
 
 const CONFIG = {
-  // Change this to your API Gateway URL after deploying the backend,
-  // e.g. "https://abc123.execute-api.us-east-1.amazonaws.com/prod"
-  API_BASE: "",
-  USE_LOCAL_DATA: true, // flip to false after deploying
+  API_BASE: "http://localhost:3000",
+  USE_LOCAL_DATA: false, 
   LOCAL_DATA_URL: "./data/pets.json",
 };
 
@@ -272,7 +270,7 @@ const pages = {
 
     wireForm({
       form,
-      path: "/applications",
+      path: "/inquiries",
       successEl: document.getElementById("adopt-success"),
       statusEl: document.getElementById("adopt-status"),
       onSuccess: () => {
