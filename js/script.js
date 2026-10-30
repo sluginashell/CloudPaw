@@ -10,7 +10,7 @@
 
 const CONFIG = {
   API_BASE: "http://localhost:3000",
-  USE_LOCAL_DATA: false, 
+  USE_LOCAL_DATA: false,
   LOCAL_DATA_URL: "./data/pets.json",
 };
 
@@ -69,12 +69,9 @@ async function fetchPet(id) {
     const pets = await getJson(CONFIG.LOCAL_DATA_URL);
     return pets.find((pet) => String(pet.id) === String(id)) || null;
   }
-  const res = await fetch(`${CONFIG.API_BASE}/pets/${encodeURIComponent(id)}`);
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Failed to load pet (${res.status})`);
-  return res.json();
+  const allPets = await getJson(`${CONFIG.API_BASE}/pets`);
+  return allPets.find(p => String(p.id) === String(id)) || null;
 }
-
 // Sends form data to the API. There is no backend yet, so in local mode the
 // data is only logged to the console; nothing is stored or emailed.
 async function submitForm(path, data) {
@@ -116,7 +113,7 @@ const petDetailHtml = (pet) => `
   <article class="pet-detail">
     <img
       class="pet-detail__image"
-      src="${escapeHtml(pet.photo.url || PLACEHOLDER_IMAGE)}"
+      src="${escapeHtml(pet.photo_url ? pet.photo_url : 'images/pets/' + pet.name.toLowerCase() + '.jpg')}"
       alt="${escapeHtml(pet.name)} the ${escapeHtml(pet.species)}"
     />
     <div class="pet-detail__body">
@@ -319,13 +316,13 @@ const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault(); // Stops the page from refreshing
-    
+
     // Grab the email they typed
     const email = document.getElementById("email").value;
-    
+
     // For now, just show a success message and redirect them to the home page
     alert(`Login successful for ${email}! (Note: This is a simulated login until Safia connects AWS Cognito).`);
-    
+
     // Send them to the home page
     window.location.href = "index.html";
   });
