@@ -95,7 +95,7 @@ const petCardHtml = (pet) => `
   <article class="pet-card">
     <img
       class="pet-card__image"
-      src="${escapeHtml(pet.photo_url || PLACEHOLDER_IMAGE)}"
+      src="${escapeHtml(pet.photo_url || 'images/pets/' + pet.name.toLowerCase() + '.jpg')}"
       alt="${escapeHtml(pet.name)} the ${escapeHtml(pet.species)}"
       loading="lazy"
     />
