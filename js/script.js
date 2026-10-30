@@ -310,20 +310,17 @@ if (els.year) els.year.textContent = new Date().getFullYear();
 
 /* ---------- Boot ---------- */
 pages[document.body.dataset.page]?.();
+
 /* ---------- Login Page Logic ---------- */
-const loginForm = document.getElementById("login-form");
+window.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
 
-if (loginForm) {
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault(); // Stops the page from refreshing
-
-    // Grab the email they typed
-    const email = document.getElementById("email").value;
-
-    // For now, just show a success message and redirect them to the home page
-    alert(`Login successful for ${email}! (Note: This is a simulated login until Safia connects AWS Cognito).`);
-
-    // Send them to the home page
-    window.location.href = "index.html";
-  });
-}
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      alert(`Login successful for ${email}! (Note: This is a simulated login until Safia connects AWS Cognito).`);
+      window.location.href = "index.html";
+    });
+  }
+});
