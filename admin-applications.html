@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin: Applications | CloudPaw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="admin">
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
+        <span class="logo-text">CloudPaw</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul id="nav-menu" class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="admin-add.html">Add Pet</a></li>
+        <li><a href="admin-applications.html" style="color: var(--color-primary); font-weight: bold;">Applications</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign Out</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" style="max-width: 1000px; margin: 4rem auto; padding: 0 1rem;">
+    <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Review Applications</h1>
+    
+    <div class="card" style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md);">
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--color-border);">
+            <th style="padding: 10px;">Applicant</th>
+            <th style="padding: 10px;">Pet</th>
+            <th style="padding: 10px;">Email</th>
+            <th style="padding: 10px;">Status</th>
+            <th style="padding: 10px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="applications-table">
+          <!-- Application rows will load here via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="margin-top: 10rem;">
+    <div class="footer-inner">
+      <div>
+        <h3>CloudPaw Admin</h3>
+        <p class="muted">Internal Use Only.</p>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Fake data to simulate what the database will send later
+    const fakeApps = [
+      { id: 1, name: "John Doe", pet: "Luna", email: "john@example.com", status: "Pending" },
+      { id: 2, name: "Jane Smith", pet: "Milo", email: "jane@example.com", status: "Pending" },
+      { id: 3, name: "Alice Johnson", pet: "Charlie", email: "alice@example.com", status: "Approved" }
+    ];
+
+    const table = document.getElementById("applications-table");
+
+    fakeApps.forEach(app => {
+      const row = document.createElement("tr");
+      row.style.borderBottom = "1px solid var(--color-border)";
+      
+      // Determine status badge color
+      let statusColor = app.status === "Approved" ? "green" : "orange";
+      let actionButtons = "";
+
+      if (app.status === "Pending") {
+        actionButtons = `
+          <button onclick="alert('Application Approved!')" style="background: #22c55e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 5px;">Approve</button>
+          <button onclick="alert('Application Denied.')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Deny</button>
+        `;
+      } else {
+        actionButtons = `<span style="color: var(--color-muted); font-size: 0.9em;">Completed</span>`;
+      }
+
+      row.innerHTML = `
+        <td style="padding: 15px 10px;">${app.name}</td>
+        <td style="padding: 15px 10px; font-weight: bold;">${app.pet}</td>
+        <td style="padding: 15px 10px; color: var(--color-muted);">${app.email}</td>
+        <td style="padding: 15px 10px;">
+          <span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">${app.status}</span>
+        </td>
+        <td style="padding: 15px 10px;">${actionButtons}</td>
+      `;
+      
+      table.appendChild(row);
+    });
+  </script>
+</body>
+</html>

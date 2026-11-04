@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin: Add a Pet | CloudPaw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="admin">
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
+        <span class="logo-text">CloudPaw</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+            <ul id="nav-menu" class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="admin-add.html" style="color: var(--color-primary); font-weight: bold;">Add Pet</a></li>
+        <li><a href="admin-applications.html">Applications</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign Out</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
+    <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Add a New Pet</h1>
+    
+    <form id="add-pet-form" class="card" style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      
+      <div style="grid-column: span 2;">
+        <label for="pet-name">Pet Name</label>
+        <input type="text" id="pet-name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+      </div>
+
+      <div>
+        <label for="pet-species">Species</label>
+        <select id="pet-species" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+          <option value="Dog">Dog</option>
+          <option value="Cat">Cat</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="pet-breed">Breed</label>
+        <input type="text" id="pet-breed" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+      </div>
+
+      <div>
+        <label for="pet-age">Age (Years)</label>
+        <input type="number" id="pet-age" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+      </div>
+
+      <div>
+        <label for="pet-location">Location</label>
+        <input type="text" id="pet-location" required placeholder="City, State" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+      </div>
+
+      <div style="grid-column: span 2;">
+        <label for="pet-photo">Upload Photo</label>
+        <input type="file" id="pet-photo" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px dashed var(--color-border); border-radius: 8px; background: var(--color-surface);" />
+      </div>
+
+      <div style="grid-column: span 2;">
+        <label for="pet-description">Description</label>
+        <textarea id="pet-description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="grid-column: span 2; margin-top: 10px;">Save Pet to Database</button>
+    </form>
+  </main>
+
+  <footer class="site-footer" style="margin-top: 10rem;">
+    <div class="footer-inner">
+      <div>
+        <h3>CloudPaw Admin</h3>
+        <p class="muted">Internal Use Only.</p>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
+  </footer>
+
+  <script src="js/script.js" defer></script>
+</body>
+</html>
