@@ -92,6 +92,115 @@ async function submitForm(path, data) {
   if (!res.ok) throw new Error(`Submit failed (${res.status})`);
 }
 
+/* ---------- Auth ---------- */
+// Sign-in state from /auth/login or /auth/signup: { token, user }.
+// Later requests that need sign-in send it as "Authorization: Bearer <token>".
+const AUTH_STORAGE_KEY = "cloudpaw.auth";
+
+// Returns false if the browser blocks storage (e.g. some private modes).
+function saveAuth(token, user) {
+  try {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, user }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// POSTs JSON to an /auth route. Resolves with { ok, body } for any HTTP
+// response; only throws if the server can't be reached.
+async function postAuth(path, data) {
+  const res = await fetch(`${CONFIG.API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const body = await res.json().catch(() => ({}));
+  return { ok: res.ok, body };
+}
+
+// Shows a message under a form field and marks the field invalid.
+function showFieldError(input, message) {
+  const id = `${input.id}-error`;
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("p");
+    el.id = id;
+    el.className = "field-error";
+    input.insertAdjacentElement("afterend", el);
+  }
+  el.textContent = message;
+  input.setAttribute("aria-invalid", "true");
+  input.dataset.prevDescribedby ??= input.getAttribute("aria-describedby") || "";
+  input.setAttribute("aria-describedby", `${input.dataset.prevDescribedby} ${id}`.trim());
+}
+
+function clearFieldErrors(form) {
+  form.querySelectorAll(".field-error").forEach((el) => el.remove());
+  form.querySelectorAll('[aria-invalid="true"]').forEach((input) => {
+    input.removeAttribute("aria-invalid");
+    const prev = input.dataset.prevDescribedby;
+    if (prev) input.setAttribute("aria-describedby", prev);
+    else input.removeAttribute("aria-describedby");
+    delete input.dataset.prevDescribedby;
+  });
+}
+
+// Wires the sign-in or sign-up form: checks it, posts it, shows errors from the
+// API on the page, and on success saves the session and goes to the home page.
+function wireAuthForm({ form, statusEl, path, buildBody, beforeSubmit, onFailure, pendingText }) {
+  const setStatus = (message, isError = false) => {
+    statusEl.textContent = message;
+    statusEl.classList.toggle("status--error", isError);
+  };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearFieldErrors(form);
+    setStatus("");
+    beforeSubmit?.();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (CONFIG.USE_LOCAL_DATA) {
+      setStatus("Signing in needs the CloudPaw API, which isn't connected in local mode.", true);
+      return;
+    }
+
+    const submitBtn = form.querySelector("[type=submit]");
+    submitBtn.disabled = true;
+    setStatus(pendingText);
+
+    try {
+      const { ok, body } = await postAuth(path, buildBody());
+      if (ok && body.token && body.user) {
+        if (!saveAuth(body.token, body.user)) {
+          setStatus("Your browser is blocking site storage, so we can't keep you signed in.", true);
+          return;
+        }
+        setStatus(`Welcome, ${body.user.name}! Taking you to the home page…`);
+        window.location.href = "index.html";
+        return;
+      }
+
+      // 400 / 401 / 409: show the API's message, plus any per-field messages.
+      for (const [field, message] of Object.entries(body.fields || {})) {
+        const input = form.elements[field];
+        if (input) showFieldError(input, message);
+      }
+      setStatus(body.error || "Something went wrong. Please try again.", true);
+      onFailure?.();
+      form.querySelector('[aria-invalid="true"]')?.focus();
+    } catch (err) {
+      console.error(err);
+      setStatus("We couldn't reach the server. Please try again later.", true);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
 /* ---------- Rendering ---------- */
 const petCardHtml = (pet) => `
   <article class="pet-card">
@@ -290,6 +399,47 @@ const pages = {
       statusEl: document.getElementById("contact-status"),
     });
   },
+
+  login() {
+    const form = document.getElementById("login-form");
+    wireAuthForm({
+      form,
+      statusEl: document.getElementById("login-status"),
+      path: "/auth/login",
+      pendingText: "Signing in…",
+      buildBody: () => ({ email: form.elements.email.value, password: form.elements.password.value }),
+      // Wrong email or password: clear the password so it can be retyped.
+      onFailure: () => {
+        form.elements.password.value = "";
+        form.elements.password.focus();
+      },
+    });
+  },
+
+  signup() {
+    const form = document.getElementById("signup-form");
+    const password = form.elements.password;
+    const confirm = form.elements["confirm-password"];
+
+    // The confirm field is checked here only; it is never sent to the API.
+    const checkMatch = () =>
+      confirm.setCustomValidity(confirm.value && confirm.value !== password.value ? "Passwords don't match." : "");
+    password.addEventListener("input", checkMatch);
+    confirm.addEventListener("input", checkMatch);
+
+    wireAuthForm({
+      form,
+      statusEl: document.getElementById("signup-status"),
+      path: "/auth/signup",
+      pendingText: "Creating your account…",
+      beforeSubmit: checkMatch,
+      buildBody: () => ({
+        name: form.elements.name.value,
+        email: form.elements.email.value,
+        password: password.value,
+      }),
+    });
+  },
 };
 
 /* ---------- Shared events ---------- */
@@ -315,17 +465,3 @@ if (els.year) els.year.textContent = new Date().getFullYear();
 
 /* ---------- Boot ---------- */
 pages[document.body.dataset.page]?.();
-
-/* ---------- Login Page Logic ---------- */
-window.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("login-form");
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      alert(`Login successful for ${email}! (Note: This is a simulated login until Safia connects AWS Cognito).`);
-      window.location.href = "index.html";
-    });
-  }
-});
