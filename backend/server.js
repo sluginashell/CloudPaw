@@ -1,9 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
+const auth = require('./auth');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use('/auth', auth.router);
 
 app.get('/pets', (req, res) => {
   const { species, q } = req.query;
