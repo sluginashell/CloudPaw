@@ -37,4 +37,114 @@ app.get('/pets/:id', (req, res) => {
   res.json(pet);
 });
 
+/* ---------- Adoption inquiries ---------- */
+// Matches the options in adopt.html.
+const HOUSING_OPTIONS = ['House', 'Apartment', 'Condo / Townhouse', 'Other'];
+const YARD_OPTIONS = ['Yes', 'No'];
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^[0-9+().\-\s]+$/;
+
+// Checks the adoption form fields sent by adopt.html.
+// Returns { values, errors }: values are trimmed and ready to save,
+// errors maps each bad field name to a message (empty when everything is valid).
+function validateInquiry(body) {
+  const errors = {};
+  const values = {};
+
+  // Reads a text field. Missing or blank is an error only when the field is required.
+  const text = (field, { required, max }) => {
+    const raw = body[field];
+    if (raw === undefined || raw === null || raw === '') {
+      if (required) errors[field] = 'This field is required.';
+      return null;
+    }
+    if (typeof raw !== 'string') {
+      errors[field] = 'Must be text.';
+      return null;
+    }
+    const value = raw.trim();
+    if (!value) {
+      if (required) errors[field] = 'This field is required.';
+      return null;
+    }
+    if (value.length > max) {
+      errors[field] = `Must be ${max} characters or fewer.`;
+      return null;
+    }
+    return value;
+  };
+
+  values.name = text('name', { required: true, max: 100 });
+  values.email = text('email', { required: true, max: 254 });
+  values.phone = text('phone', { required: true, max: 30 });
+  values.city = text('city', { required: true, max: 100 });
+  values.housing = text('housing', { required: true, max: 50 });
+  values.yard = text('yard', { required: false, max: 10 });
+  values.otherPets = text('otherPets', { required: false, max: 2000 });
+  values.reason = text('reason', { required: true, max: 2000 });
+
+  if (values.email && !EMAIL_PATTERN.test(values.email)) {
+    errors.email = 'Enter a valid email address.';
+  }
+  if (values.phone) {
+    const digits = values.phone.replace(/\D/g, '').length;
+    if (!PHONE_PATTERN.test(values.phone) || digits < 7 || digits > 15) {
+      errors.phone = 'Enter a valid phone number.';
+    }
+  }
+  if (values.housing && !HOUSING_OPTIONS.includes(values.housing)) {
+    errors.housing = `Must be one of: ${HOUSING_OPTIONS.join(', ')}.`;
+  }
+  if (values.yard && !YARD_OPTIONS.includes(values.yard)) {
+    errors.yard = 'Must be Yes or No.';
+  }
+  if (body.agree !== 'yes') {
+    errors.agree = 'You must agree before submitting.';
+  }
+
+  // The form sends petId as a string ("3"); accept a whole number in either form.
+  const petId = String(body.petId ?? '').trim();
+  if (!/^[1-9]\d*$/.test(petId)) {
+    errors.petId = 'Choose a pet.';
+  } else {
+    values.petId = Number(petId);
+  }
+
+  return { values, errors };
+}
+
+app.post('/inquiries', (req, res) => {
+  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const { values, errors } = validateInquiry(body);
+
+  // SQLite doesn't enforce REFERENCES pets(id) by default, so check the pet exists here.
+  if (!errors.petId && !db.prepare('SELECT 1 FROM pets WHERE id = ?').get(values.petId)) {
+    errors.petId = 'That pet could not be found.';
+  }
+
+  if (Object.keys(errors).length) {
+    return res.status(400).json({ error: 'Please fix the highlighted fields.', fields: errors });
+  }
+
+  try {
+    const result = db.prepare(`INSERT INTO inquiries
+      (pet_id, name, email, phone, city, housing, yard, other_pets, reason)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      values.petId,
+      values.name,
+      values.email,
+      values.phone,
+      values.city,
+      values.housing,
+      values.yard,
+      values.otherPets,
+      values.reason
+    );
+    res.status(201).json({ id: Number(result.lastInsertRowid), message: 'Application received!' });
+  } catch (err) {
+    console.error('Failed to save inquiry:', err);
+    res.status(500).json({ error: 'Could not save your application. Please try again later.' });
+  }
+});
+
 app.listen(3000, () => console.log('API on http://localhost:3000'));

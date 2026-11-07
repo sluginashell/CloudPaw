@@ -23,3 +23,17 @@ CREATE TABLE IF NOT EXISTS applications (
   status TEXT DEFAULT 'pending',
   submitted_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS inquiries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  pet_id INTEGER NOT NULL REFERENCES pets(id),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  city TEXT NOT NULL,
+  housing TEXT NOT NULL,
+  yard TEXT,
+  other_pets TEXT,
+  reason TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
