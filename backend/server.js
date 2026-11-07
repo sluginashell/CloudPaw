@@ -150,4 +150,24 @@ app.post('/inquiries', (req, res) => {
   }
 });
 
+// Admin only: every saved application, newest first, with the pet's name.
+// LEFT JOIN so an application is never dropped from the list, even if its pet
+// row is missing (pet_name is then null).
+app.get('/inquiries', auth.requireAdmin, (req, res) => {
+  // Contains applicants' personal details, so never let a browser or proxy cache it.
+  res.set('Cache-Control', 'no-store');
+  try {
+    const rows = db.prepare(`
+      SELECT i.id, i.pet_id, p.name AS pet_name, i.name, i.email, i.phone, i.city,
+             i.housing, i.yard, i.other_pets, i.reason, i.status, i.created_at
+      FROM inquiries i
+      LEFT JOIN pets p ON p.id = i.pet_id
+      ORDER BY i.created_at DESC, i.id DESC`).all();
+    res.json(rows);
+  } catch (err) {
+    console.error('Failed to load inquiries:', err);
+    res.status(500).json({ error: 'Could not load applications.' });
+  }
+});
+
 app.listen(3000, () => console.log('API on http://localhost:3000'));
