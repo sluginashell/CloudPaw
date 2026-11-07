@@ -120,7 +120,8 @@ app.post('/inquiries', (req, res) => {
   const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
   const { values, errors } = validateInquiry(body);
 
-  // SQLite doesn't enforce REFERENCES pets(id) by default, so check the pet exists here.
+  // better-sqlite3 enforces REFERENCES pets(id), so a missing pet would make the INSERT
+  // fail with a 500. Check here first so the form gets a clear 400 for petId instead.
   if (!errors.petId && !db.prepare('SELECT 1 FROM pets WHERE id = ?').get(values.petId)) {
     errors.petId = 'That pet could not be found.';
   }
@@ -147,6 +148,85 @@ app.post('/inquiries', (req, res) => {
   } catch (err) {
     console.error('Failed to save inquiry:', err);
     res.status(500).json({ error: 'Could not save your application. Please try again later.' });
+  }
+});
+
+// Admin only: every saved application, newest first, with the pet's name.
+// LEFT JOIN so an application is never dropped from the list, even if its pet
+// row is missing (pet_name is then null).
+app.get('/inquiries', auth.requireAdmin, (req, res) => {
+  // Contains applicants' personal details, so never let a browser or proxy cache it.
+  res.set('Cache-Control', 'no-store');
+  try {
+    const rows = db.prepare(`
+      SELECT i.id, i.pet_id, p.name AS pet_name, i.name, i.email, i.phone, i.city,
+             i.housing, i.yard, i.other_pets, i.reason, i.status, i.created_at
+      FROM inquiries i
+      LEFT JOIN pets p ON p.id = i.pet_id
+      ORDER BY i.created_at DESC, i.id DESC`).all();
+    res.json(rows);
+  } catch (err) {
+    console.error('Failed to load inquiries:', err);
+    res.status(500).json({ error: 'Could not load applications.' });
+  }
+});
+
+/* ---------- Contact messages ---------- */
+// Checks the contact form fields sent by about.html: name, email, message.
+// Returns { values, errors } like validateInquiry; other fields are ignored.
+function validateMessage(body) {
+  const errors = {};
+  const values = {};
+
+  const text = (field, max) => {
+    const raw = body[field];
+    if (raw === undefined || raw === null || raw === '') {
+      errors[field] = 'This field is required.';
+      return null;
+    }
+    if (typeof raw !== 'string') {
+      errors[field] = 'Must be text.';
+      return null;
+    }
+    const value = raw.trim();
+    if (!value) {
+      errors[field] = 'This field is required.';
+      return null;
+    }
+    if (value.length > max) {
+      errors[field] = `Must be ${max} characters or fewer.`;
+      return null;
+    }
+    return value;
+  };
+
+  values.name = text('name', 100);
+  values.email = text('email', 254);
+  values.message = text('message', 5000);
+
+  if (values.email && !EMAIL_PATTERN.test(values.email)) {
+    errors.email = 'Enter a valid email address.';
+  }
+
+  return { values, errors };
+}
+
+// Public: anyone can send a message from the About page.
+app.post('/messages', (req, res) => {
+  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const { values, errors } = validateMessage(body);
+
+  if (Object.keys(errors).length) {
+    return res.status(400).json({ error: 'Please fix the highlighted fields.', fields: errors });
+  }
+
+  try {
+    const result = db.prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)')
+      .run(values.name, values.email, values.message);
+    res.status(201).json({ id: Number(result.lastInsertRowid), message: 'Message sent!' });
+  } catch (err) {
+    console.error('Failed to save message:', err);
+    res.status(500).json({ error: 'Could not send your message. Please try again later.' });
   }
 });
 
