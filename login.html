@@ -36,15 +36,16 @@
   <main id="main" style="max-width: 500px; margin: 4rem auto; padding: 0 1rem;">
     <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Welcome Back</h1>
     
-    <form id="login-form" class="card" style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 15px;">
-      
+    <form id="login-form" class="card" novalidate style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 15px;">
+
       <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
+      <input type="email" id="email" name="email" autocomplete="email" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
 
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
+      <input type="password" id="password" name="password" autocomplete="current-password" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
 
       <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
+      <p id="login-status" class="status" role="status" aria-live="polite"></p>
     </form>
 
     <p style="text-align: center; margin-top: 1.5rem; color: var(--color-muted);">
