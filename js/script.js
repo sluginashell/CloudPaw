@@ -69,9 +69,14 @@ async function fetchPet(id) {
     const pets = await getJson(CONFIG.LOCAL_DATA_URL);
     return pets.find((pet) => String(pet.id) === String(id)) || null;
   }
-  const allPets = await getJson(`${CONFIG.API_BASE}/pets`);
-  return allPets.find(p => String(p.id) === String(id)) || null;
+  const res = await fetch(`${CONFIG.API_BASE}/pets/${encodeURIComponent(id)}`);
+  // 404 means "no such pet": return null so the page shows "couldn't find that pet".
+  // Any other failure throws, so the page shows "couldn't load this pet right now".
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Request failed (${res.status}): /pets/${id}`);
+  return res.json();
 }
+
 // Sends form data to the API. There is no backend yet, so in local mode the
 // data is only logged to the console; nothing is stored or emailed.
 async function submitForm(path, data) {
