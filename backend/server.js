@@ -171,4 +171,63 @@ app.get('/inquiries', auth.requireAdmin, (req, res) => {
   }
 });
 
+/* ---------- Contact messages ---------- */
+// Checks the contact form fields sent by about.html: name, email, message.
+// Returns { values, errors } like validateInquiry; other fields are ignored.
+function validateMessage(body) {
+  const errors = {};
+  const values = {};
+
+  const text = (field, max) => {
+    const raw = body[field];
+    if (raw === undefined || raw === null || raw === '') {
+      errors[field] = 'This field is required.';
+      return null;
+    }
+    if (typeof raw !== 'string') {
+      errors[field] = 'Must be text.';
+      return null;
+    }
+    const value = raw.trim();
+    if (!value) {
+      errors[field] = 'This field is required.';
+      return null;
+    }
+    if (value.length > max) {
+      errors[field] = `Must be ${max} characters or fewer.`;
+      return null;
+    }
+    return value;
+  };
+
+  values.name = text('name', 100);
+  values.email = text('email', 254);
+  values.message = text('message', 5000);
+
+  if (values.email && !EMAIL_PATTERN.test(values.email)) {
+    errors.email = 'Enter a valid email address.';
+  }
+
+  return { values, errors };
+}
+
+// Public: anyone can send a message from the About page.
+app.post('/messages', (req, res) => {
+  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const { values, errors } = validateMessage(body);
+
+  if (Object.keys(errors).length) {
+    return res.status(400).json({ error: 'Please fix the highlighted fields.', fields: errors });
+  }
+
+  try {
+    const result = db.prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)')
+      .run(values.name, values.email, values.message);
+    res.status(201).json({ id: Number(result.lastInsertRowid), message: 'Message sent!' });
+  } catch (err) {
+    console.error('Failed to save message:', err);
+    res.status(500).json({ error: 'Could not send your message. Please try again later.' });
+  }
+});
+
 app.listen(3000, () => console.log('API on http://localhost:3000'));
