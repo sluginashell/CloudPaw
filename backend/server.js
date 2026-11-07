@@ -6,10 +6,28 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/pets', (req, res) => {
-  const { species } = req.query;
-  const rows = species
-    ? db.prepare('SELECT * FROM pets WHERE species = ?').all(species)
-    : db.prepare('SELECT * FROM pets').all();
+  const { species, q } = req.query;
+  const conditions = [];
+  const params = [];
+
+  if (species) {
+    conditions.push('species = ?');
+    params.push(species);
+  }
+
+  // Free-text search: case-insensitive partial match on name, species, or breed.
+  // % and _ are wildcards in LIKE, so escape them to search for them literally.
+  const term = typeof q === 'string' ? q.trim() : '';
+  if (term) {
+    const pattern = `%${term.replace(/[\\%_]/g, '\\$&')}%`;
+    conditions.push(
+      "(name LIKE ? ESCAPE '\\' OR species LIKE ? ESCAPE '\\' OR breed LIKE ? ESCAPE '\\')"
+    );
+    params.push(pattern, pattern, pattern);
+  }
+
+  const where = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
+  const rows = db.prepare(`SELECT * FROM pets${where}`).all(...params);
   res.json(rows);
 });
 
