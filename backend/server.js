@@ -120,7 +120,8 @@ app.post('/inquiries', (req, res) => {
   const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
   const { values, errors } = validateInquiry(body);
 
-  // SQLite doesn't enforce REFERENCES pets(id) by default, so check the pet exists here.
+  // better-sqlite3 enforces REFERENCES pets(id), so a missing pet would make the INSERT
+  // fail with a 500. Check here first so the form gets a clear 400 for petId instead.
   if (!errors.petId && !db.prepare('SELECT 1 FROM pets WHERE id = ?').get(values.petId)) {
     errors.petId = 'That pet could not be found.';
   }
