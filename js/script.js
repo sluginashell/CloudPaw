@@ -1,7 +1,8 @@
 /* =============================================================================
    CloudPaw — front-end controller (shared by every page)
    Fetches pet listings from a configurable API endpoint.
-   Locally: reads ./data/pets.json
+   API_BASE is relative ("/api") because backend/server.js serves both this
+   site and the API from http://localhost:3000.
    In AWS:  point API_BASE at your API Gateway invoke URL.
 
    Each page sets <body data-page="..."> and the matching init function below
@@ -9,7 +10,7 @@
    ============================================================================= */
 
 const CONFIG = {
-  API_BASE: "http://localhost:3000",
+  API_BASE: "/api",
   USE_LOCAL_DATA: false,
   LOCAL_DATA_URL: "./data/pets.json",
 };

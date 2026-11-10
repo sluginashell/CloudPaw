@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
@@ -6,9 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/auth', auth.router);
+// All JSON API routes live under /api (e.g. /api/pets), so they can never
+// collide with the frontend's page and asset paths.
+const api = express.Router();
 
-app.get('/pets', (req, res) => {
+api.use('/auth', auth.router);
+
+api.get('/pets', (req, res) => {
   const { species, q } = req.query;
   const conditions = [];
   const params = [];
@@ -34,7 +39,7 @@ app.get('/pets', (req, res) => {
   res.json(rows);
 });
 
-app.get('/pets/:id', (req, res) => {
+api.get('/pets/:id', (req, res) => {
   const pet = db.prepare('SELECT * FROM pets WHERE id = ?').get(req.params.id);
   if (!pet) return res.status(404).json({ error: 'Pet not found' });
   res.json(pet);
@@ -116,7 +121,7 @@ function validateInquiry(body) {
   return { values, errors };
 }
 
-app.post('/inquiries', (req, res) => {
+api.post('/inquiries', (req, res) => {
   const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
   const { values, errors } = validateInquiry(body);
 
@@ -154,7 +159,7 @@ app.post('/inquiries', (req, res) => {
 // Admin only: every saved application, newest first, with the pet's name.
 // LEFT JOIN so an application is never dropped from the list, even if its pet
 // row is missing (pet_name is then null).
-app.get('/inquiries', auth.requireAdmin, (req, res) => {
+api.get('/inquiries', auth.requireAdmin, (req, res) => {
   // Contains applicants' personal details, so never let a browser or proxy cache it.
   res.set('Cache-Control', 'no-store');
   try {
@@ -212,7 +217,7 @@ function validateMessage(body) {
 }
 
 // Public: anyone can send a message from the About page.
-app.post('/messages', (req, res) => {
+api.post('/messages', (req, res) => {
   const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
   const { values, errors } = validateMessage(body);
 
@@ -230,4 +235,23 @@ app.post('/messages', (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('API on http://localhost:3000'));
+// Unknown /api paths get a JSON 404 instead of falling through to the static files.
+api.use((req, res) => res.status(404).json({ error: 'Not found' }));
+app.use('/api', api);
+
+/* ---------- Frontend ---------- */
+// The site's files sit in the repo root next to backend/, which holds the
+// database (users, password hashes, sessions). So never serve the root folder
+// as a whole: expose only the frontend, the same allowlist the CI deploy uses
+// (*.html, css/, js/, images/, data/).
+const SITE_ROOT = path.join(__dirname, '..');
+for (const dir of ['css', 'js', 'images', 'data']) {
+  app.use(`/${dir}`, express.static(path.join(SITE_ROOT, dir)));
+}
+// Top-level pages only: "/" -> index.html, "/pets.html", "/about.html", ...
+app.get(/^\/(?:[\w-]+\.html)?$/, (req, res, next) => {
+  const file = req.path === '/' ? 'index.html' : req.path.slice(1);
+  res.sendFile(file, { root: SITE_ROOT }, (err) => err && next());
+});
+
+app.listen(3000, () => console.log('CloudPaw on http://localhost:3000 (API at /api)'));
