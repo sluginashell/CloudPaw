@@ -90,7 +90,40 @@
     </div>
     <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
   </footer>
+  <script>
+    document.getElementById("add-pet-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: document.getElementById("pet-name").value,
+        species: document.getElementById("pet-species").value,
+        breed: document.getElementById("pet-breed").value,
+        age: document.getElementById("pet-age").value,
+        location: document.getElementById("pet-location").value,
+        description: document.getElementById("pet-description").value,
+        photo_url: "images/placeholder.svg" 
+      };
 
+      try {
+        const response = await fetch("/api/pets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert("Pet successfully added to the database!");
+          window.location.href = "admin-applications.html"; 
+        } else {
+          alert("Failed to add pet. Check the console.");
+          console.error(await response.text());
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Network error. Is the server running?");
+      }
+    });
+  </script>
   <script src="js/script.js" defer></script>
 </body>
 </html>

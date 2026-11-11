@@ -38,7 +38,10 @@ app.post('/api/applications', (req, res) => {
     console.log("Application received");
     res.status(201).json({ message: "Application received!" });
 });
-
+app.post('/api/pets', (req, res) => {
+    console.log("Received new pet data:", req.body);
+    res.status(201).json({ message: "Pet added successfully" });
+});
 app.listen(3000, () => {
     console.log('Mock Server running on http://localhost:3000');
 });
