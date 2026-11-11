@@ -7,10 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const dataPath = path.join(__dirname, '..', 'data', 'pets.json');
+// Serve the static frontend files
+app.use(express.static(path.join(__dirname, '..')));
 
-app.get('/pets', (req, res) => {
+// API endpoint matching Safia's new /api/pets structure
+app.get('/api/pets', (req, res) => {
     try {
+        const dataPath = path.join(__dirname, '..', 'data', 'pets.json');
         const pets = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
         res.json(pets);
     } catch (err) {
@@ -18,8 +21,21 @@ app.get('/pets', (req, res) => {
     }
 });
 
-app.post('/inquiries', (req, res) => {
-    console.log("Inquiry received");
+app.get('/api/pets/:id', (req, res) => {
+    try {
+        const dataPath = path.join(__dirname, '..', 'data', 'pets.json');
+        const pets = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        const pet = pets.find(p => String(p.id) === String(req.params.id));
+        if (pet) res.json(pet);
+        else res.status(404).json({ error: "Pet not found" });
+    } catch (err) {
+        res.status(500).json({ error: "Could not load pet" });
+    }
+});
+
+// Fake adoption endpoint
+app.post('/api/applications', (req, res) => {
+    console.log("Application received");
     res.status(201).json({ message: "Application received!" });
 });
 
