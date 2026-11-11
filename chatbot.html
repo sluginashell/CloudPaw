@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Pet Assistant | CloudPaw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .chat-container {
+      max-width: 800px;
+      margin: 4rem auto;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+    }
+    .chat-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      max-width: 80%;
+      line-height: 1.5;
+    }
+    .message.bot {
+      background: var(--color-surface);
+      align-self: flex-start;
+      border: 1px solid var(--color-border);
+    }
+    .message.user {
+      background: var(--color-primary);
+      color: white;
+      align-self: flex-end;
+    }
+    .chat-input-area {
+      padding: 1rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-area input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body data-page="chatbot">
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="index.html" aria-label="CloudPaw home">
+        <img src="images/placeholder.svg" alt="" width="48" height="48" />
+        <span class="logo-text">CloudPaw</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul id="nav-menu" class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="chatbot.html" style="color: var(--color-primary); font-weight: bold;">AI Assistant</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign In</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="chat-container">
+      <div class="chat-header">
+        <h2 style="font-family: var(--font-heading);">CloudPaw AI Assistant</h2>
+        <p class="muted" style="font-size: 0.9rem;">Ask me anything about our available pets!</p>
+      </div>
+      
+      <div class="chat-messages" id="chat-messages">
+        <div class="message bot">
+          Hello! I am the CloudPaw AI assistant. Ask me a question like "Which dogs are good with kids?" or "Tell me about Luna."
+        </div>
+      </div>
+
+      <form class="chat-input-area" id="chat-form">
+        <input type="text" id="chat-input" placeholder="Type your question here..." autocomplete="off" required />
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const chatMessages = document.getElementById("chat-messages");
+
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const userText = chatInput.value.trim();
+      if (!userText) return;
+
+      // 1. Add the user's message to the screen
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user";
+      userMsg.textContent = userText;
+      chatMessages.appendChild(userMsg);
+
+      chatInput.value = "";
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // 2. Simulate the AI thinking (this is where Bedrock will go later)
+      setTimeout(() => {
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot";
+        
+        // Fake AI logic for the demo
+        if (userText.toLowerCase().includes("luna")) {
+          botMsg.textContent = "Luna is a 2-year-old Labrador Retriever mix. She is very friendly, high-energy, and loves to play fetch!";
+        } else if (userText.toLowerCase().includes("cat")) {
+          botMsg.textContent = "We currently have Milo and Oliver available. Milo is a laid-back tabby, and Oliver is a gentle Maine Coon.";
+        } else {
+          botMsg.textContent = "That's a great question! Once I am connected to AWS Bedrock, I will search our database and documents to give you a detailed answer.";
+        }
+
+        chatMessages.appendChild(botMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000); // 1 second delay to simulate AI processing
+    });
+  </script>
+</body>
+</html>
