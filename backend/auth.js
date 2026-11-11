@@ -15,6 +15,8 @@
                    POST /signup, POST /login, POST /logout, GET /me
      requireAuth   middleware: 401 unless signed in; sets req.user
      requireAdmin  middleware: 401 unless signed in, 403 unless role is admin
+     hashPassword, normalizeEmail and the length/email limits, used by
+                   create-admin.js
    ============================================================================= */
 
 const crypto = require('crypto');
@@ -217,4 +219,8 @@ router.get('/me', requireAuth, (req, res) => {
   res.json({ user: publicUser(req.user) });
 });
 
-module.exports = { router, requireAuth, requireAdmin };
+module.exports = {
+  router, requireAuth, requireAdmin,
+  // For backend/create-admin.js, so it hashes and checks passwords the same way.
+  hashPassword, normalizeEmail, PASSWORD_MIN, PASSWORD_MAX, NAME_MAX, EMAIL_MAX, EMAIL_PATTERN,
+};

@@ -45,6 +45,92 @@ api.get('/pets/:id', (req, res) => {
   res.json(pet);
 });
 
+// Matches the options in admin-add.html.
+const SPECIES_OPTIONS = ['Dog', 'Cat', 'Other'];
+const AGE_MAX = 100;
+
+// Checks the fields for a new pet. Returns { values, errors } like validateInquiry.
+// Only these fields are read; anything else in the body (id, status, photo_url) is ignored.
+function validatePet(body) {
+  const errors = {};
+  const values = {};
+
+  const text = (field, { required, max }) => {
+    const raw = body[field];
+    if (raw === undefined || raw === null || raw === '') {
+      if (required) errors[field] = 'This field is required.';
+      return null;
+    }
+    if (typeof raw !== 'string') {
+      errors[field] = 'Must be text.';
+      return null;
+    }
+    const value = raw.trim();
+    if (!value) {
+      if (required) errors[field] = 'This field is required.';
+      return null;
+    }
+    if (value.length > max) {
+      errors[field] = `Must be ${max} characters or fewer.`;
+      return null;
+    }
+    return value;
+  };
+
+  values.name = text('name', { required: true, max: 100 });
+  values.species = text('species', { required: true, max: 20 });
+  values.breed = text('breed', { required: false, max: 100 });
+  values.location = text('location', { required: false, max: 100 });
+  values.description = text('description', { required: false, max: 2000 });
+
+  if (values.species && !SPECIES_OPTIONS.includes(values.species)) {
+    errors.species = `Must be one of: ${SPECIES_OPTIONS.join(', ')}.`;
+  }
+
+  // Optional. Accept 3 or "3" (HTML forms send strings), but not 2.5, -1 or "abc".
+  values.age = null;
+  const age = body.age;
+  if (age !== undefined && age !== null && age !== '') {
+    const ageText = typeof age === 'number' ? String(age) : typeof age === 'string' ? age.trim() : '';
+    if (!/^\d+$/.test(ageText)) {
+      errors.age = 'Must be a whole number, 0 or higher.';
+    } else if (Number(ageText) > AGE_MAX) {
+      errors.age = `Must be ${AGE_MAX} or lower.`;
+    } else {
+      values.age = Number(ageText);
+    }
+  }
+
+  return { values, errors };
+}
+
+// Admin only: add a pet. -> 201 with the saved pet, 400 with per-field errors.
+api.post('/pets', auth.requireAdmin, (req, res) => {
+  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const { values, errors } = validatePet(body);
+
+  if (Object.keys(errors).length) {
+    return res.status(400).json({ error: 'Please fix the highlighted fields.', fields: errors });
+  }
+
+  try {
+    const result = db.prepare(`INSERT INTO pets (name, species, breed, age, location, description)
+      VALUES (?, ?, ?, ?, ?, ?)`).run(
+      values.name,
+      values.species,
+      values.breed,
+      values.age,
+      values.location,
+      values.description
+    );
+    const pet = db.prepare('SELECT * FROM pets WHERE id = ?').get(result.lastInsertRowid);
+    res.status(201).json(pet);
+  } catch (err) {
+    console.error('Failed to save pet:', err);
+    res.status(500).json({ error: 'Could not save the pet. Please try again later.' });
+  }
+});
+
 /* ---------- Adoption inquiries ---------- */
 // Matches the options in adopt.html.
 const HOUSING_OPTIONS = ['House', 'Apartment', 'Condo / Townhouse', 'Other'];
