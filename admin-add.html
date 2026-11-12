@@ -7,9 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+  <meta name="robots" content="noindex" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body data-page="admin-add">
+
+  <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -17,76 +21,112 @@
         <img src="images/placeholder.svg" alt="" width="48" height="48" />
         <span class="logo-text">CloudPaw</span>
       </a>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+
+      <button
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+      >
         <span></span><span></span><span></span>
       </button>
-                  <ul id="nav-menu" class="nav-links">
+
+      <ul id="nav-menu" class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="pets.html">Find a Pet</a></li>
         <li><a href="about.html">About Us</a></li>
-        <li data-admin-only hidden><a href="admin-add.html">Admin: Add Pet</a></li>
+        <li><a href="chatbot.html">Ask AI</a></li>
+        <li data-admin-only hidden><a href="admin-add.html" aria-current="page">Admin: Add Pet</a></li>
         <li data-admin-only hidden><a href="admin-applications.html">Admin: Applications</a></li>
       </ul>
+
       <div class="nav-actions">
         <span class="nav-auth" data-auth-nav><a href="login.html" class="btn btn-ghost">Sign In</a></span>
+        <a href="adopt.html" class="btn btn-primary">Apply to Adopt</a>
       </div>
     </nav>
   </header>
 
-  <main id="main" hidden style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
-    <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Add a New Pet</h1>
-    
-    <form id="add-pet-form" class="card" style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      
-      <div style="grid-column: span 2;">
-        <label for="pet-name">Pet Name</label>
-        <input type="text" id="pet-name" name="name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+  <main id="main" hidden>
+    <section class="page-header" aria-labelledby="page-heading">
+      <div class="page-header__inner">
+        <h1 id="page-heading">Add a New Pet</h1>
+        <p>New pets appear on the site as soon as they're saved.</p>
       </div>
+    </section>
 
-      <div>
-        <label for="pet-species">Species</label>
-        <select id="pet-species" name="species" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
-          <option value="Dog">Dog</option>
-          <option value="Cat">Cat</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
+    <section class="pet-section" aria-label="Add a pet form">
+      <form id="add-pet-form" class="form-card">
+        <div class="form-grid">
+          <div class="field field--full">
+            <label for="pet-name">Pet Name <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="pet-name" name="name" required />
+          </div>
 
-      <div>
-        <label for="pet-breed">Breed</label>
-        <input type="text" id="pet-breed" name="breed" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
-      </div>
+          <div class="field">
+            <label for="pet-species">Species <span class="required" aria-hidden="true">*</span></label>
+            <select id="pet-species" name="species" required>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-      <div>
-        <label for="pet-age">Age (Years)</label>
-        <input type="number" id="pet-age" name="age" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
-      </div>
+          <div class="field">
+            <label for="pet-breed">Breed <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="pet-breed" name="breed" required />
+          </div>
 
-      <div>
-        <label for="pet-location">Location</label>
-        <input type="text" id="pet-location" name="location" required placeholder="City, State" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
-      </div>
+          <div class="field">
+            <label for="pet-age">Age (Years) <span class="required" aria-hidden="true">*</span></label>
+            <input type="number" id="pet-age" name="age" required min="0" />
+          </div>
 
-      <div style="grid-column: span 2;">
-        <label for="pet-photo">Upload Photo</label>
-        <input type="file" id="pet-photo" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px dashed var(--color-border); border-radius: 8px; background: var(--color-surface);" />
-      </div>
+          <div class="field">
+            <label for="pet-location">Location <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="pet-location" name="location" required placeholder="City, State" />
+          </div>
 
-      <div style="grid-column: span 2;">
-        <label for="pet-description">Description</label>
-        <textarea id="pet-description" name="description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;"></textarea>
-      </div>
+          <div class="field field--full">
+            <label for="pet-photo">Upload Photo</label>
+            <input type="file" id="pet-photo" accept="image/*" aria-describedby="pet-photo-hint" />
+            <p id="pet-photo-hint" class="field-hint">Photo uploads aren't connected yet, so new pets show a placeholder image.</p>
+          </div>
 
-      <button type="submit" class="btn btn-primary" style="grid-column: span 2; margin-top: 10px;">Save Pet to Database</button>
-      <p id="add-pet-status" class="status" role="status" aria-live="polite" style="grid-column: span 2;"></p>
-    </form>
+          <div class="field field--full">
+            <label for="pet-description">Description <span class="required" aria-hidden="true">*</span></label>
+            <textarea id="pet-description" name="description" required rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save Pet to Database</button>
+        </div>
+        <p id="add-pet-status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
   </main>
 
-  <footer class="site-footer" style="margin-top: 10rem;">
+  <footer class="site-footer">
     <div class="footer-inner">
       <div>
-        <h3>CloudPaw Admin</h3>
-        <p class="muted">Internal Use Only.</p>
+        <h3>CloudPaw</h3>
+        <p class="muted">A cloud-native pet adoption platform built on AWS.</p>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#shelters">For Shelters</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a></li>
+          <li><a href="about.html#contact">Send us a message</a></li>
+        </ul>
       </div>
     </div>
     <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>

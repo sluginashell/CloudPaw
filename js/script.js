@@ -78,8 +78,11 @@ async function fetchPet(id) {
   return res.json();
 }
 
-// Sends form data to the API. There is no backend yet, so in local mode the
-// data is only logged to the console; nothing is stored or emailed.
+// Sends form data to the API. In local mode the data is only logged to the
+// console; nothing is stored or emailed.
+// On an error response it throws an Error that also carries the API's reply:
+// err.status, err.apiMessage (the API's "error" text) and err.fields
+// ({ field: message } for each invalid field, empty if none).
 async function submitForm(path, data) {
   if (CONFIG.USE_LOCAL_DATA) {
     console.info(`[local mode] POST ${path} was not sent:`, data);
@@ -90,7 +93,14 @@ async function submitForm(path, data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Submit failed (${res.status})`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const err = new Error(`Submit failed (${res.status}): ${path}`);
+    err.status = res.status;
+    err.apiMessage = typeof body.error === "string" ? body.error : "";
+    err.fields = body.fields && typeof body.fields === "object" ? body.fields : {};
+    throw err;
+  }
 }
 
 /* ---------- Auth ---------- */
@@ -235,7 +245,9 @@ function showFieldError(input, message) {
     el = document.createElement("p");
     el.id = id;
     el.className = "field-error";
-    input.insertAdjacentElement("afterend", el);
+    // A checkbox sits beside its label, so put its message below both.
+    if (input.type === "checkbox" && input.parentElement) input.parentElement.append(el);
+    else input.insertAdjacentElement("afterend", el);
   }
   el.textContent = message;
   input.setAttribute("aria-invalid", "true");
@@ -358,24 +370,24 @@ const petDetailHtml = (pet) => `
 
 // One row on admin-applications.html, from GET /api/inquiries. Every value
 // comes from a public form, so all of it is escaped.
-const STATUS_COLORS = { pending: "orange", approved: "green", denied: "#dc2626" };
+// Statuses with their own badge color in style.css (.badge--pending, …).
+const STATUS_BADGES = ["pending", "approved", "denied"];
 const applicationRowHtml = (app) => {
   const status = String(app.status || "pending").toLowerCase();
   const label = status.charAt(0).toUpperCase() + status.slice(1);
+  const badge = STATUS_BADGES.includes(status) ? `badge--${status}` : "";
   // Approve/Deny only show an alert for now; nothing is saved yet.
   const actions = status === "pending"
-    ? `<button type="button" onclick="alert('Application Approved!')" style="background: #22c55e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 5px;">Approve</button>
-       <button type="button" onclick="alert('Application Denied.')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Deny</button>`
-    : `<span style="color: var(--color-muted); font-size: 0.9em;">Completed</span>`;
+    ? `<button type="button" class="btn-small btn-small--approve" onclick="alert('Application Approved!')">Approve</button>
+       <button type="button" class="btn-small btn-small--deny" onclick="alert('Application Denied.')">Deny</button>`
+    : `<span class="muted">Completed</span>`;
   return `
-    <tr style="border-bottom: 1px solid var(--color-border);">
-      <td style="padding: 15px 10px;">${escapeHtml(app.name)}</td>
-      <td style="padding: 15px 10px; font-weight: bold;">${escapeHtml(app.pet_name || `Pet #${app.pet_id}`)}</td>
-      <td style="padding: 15px 10px; color: var(--color-muted);">${escapeHtml(app.email)}</td>
-      <td style="padding: 15px 10px;">
-        <span style="background: ${STATUS_COLORS[status] || "gray"}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">${escapeHtml(label)}</span>
-      </td>
-      <td style="padding: 15px 10px;">${actions}</td>
+    <tr>
+      <td>${escapeHtml(app.name)}</td>
+      <td class="data-table__strong">${escapeHtml(app.pet_name || `Pet #${app.pet_id}`)}</td>
+      <td class="muted">${escapeHtml(app.email)}</td>
+      <td><span class="badge ${badge}">${escapeHtml(label)}</span></td>
+      <td class="data-table__actions">${actions}</td>
     </tr>`;
 };
 
@@ -413,9 +425,18 @@ async function loadPetGrid({ listEl, statusEl, query = "", species = "", limit =
 }
 
 // Validates a form, sends it, then swaps the form for a thank-you message.
+// If the API rejects it, shows the API's message and puts each field's
+// message under that field.
 function wireForm({ form, path, successEl, statusEl, onSuccess }) {
+  const setStatus = (message, isError = false) => {
+    statusEl.textContent = message;
+    statusEl.classList.toggle("status--error", isError);
+  };
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    clearFieldErrors(form);
+    setStatus("");
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
@@ -424,7 +445,7 @@ function wireForm({ form, path, successEl, statusEl, onSuccess }) {
     const data = Object.fromEntries(new FormData(form));
     const submitBtn = form.querySelector("[type=submit]");
     submitBtn.disabled = true;
-    statusEl.textContent = "Sending…";
+    setStatus("Sending…");
 
     try {
       await submitForm(path, data);
@@ -432,10 +453,20 @@ function wireForm({ form, path, successEl, statusEl, onSuccess }) {
       form.hidden = true;
       successEl.hidden = false;
       successEl.focus();
-      statusEl.textContent = "";
+      setStatus("");
     } catch (err) {
       console.error(err);
-      statusEl.textContent = "Sorry, something went wrong. Please try again.";
+      for (const [field, message] of Object.entries(err.fields || {})) {
+        const input = form.elements[field];
+        if (input) showFieldError(input, message);
+      }
+      // No status means the request never got an answer (offline, server down).
+      setStatus(
+        err.apiMessage ||
+          (err.status ? "Sorry, something went wrong. Please try again." : "We couldn't reach the server. Please try again later."),
+        true
+      );
+      form.querySelector('[aria-invalid="true"]')?.focus();
     } finally {
       submitBtn.disabled = false;
     }

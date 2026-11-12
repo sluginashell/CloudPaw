@@ -12,6 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap"
     rel="stylesheet"
   />
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body data-page="pets">
@@ -33,18 +34,18 @@
         <span></span><span></span><span></span>
       </button>
 
-            <ul id="nav-menu" class="nav-links">
+      <ul id="nav-menu" class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="pets.html">Find a Pet</a></li>
+        <li><a href="pets.html" aria-current="page">Find a Pet</a></li>
         <li><a href="about.html">About Us</a></li>
+        <li><a href="chatbot.html">Ask AI</a></li>
         <li data-admin-only hidden><a href="admin-add.html">Admin: Add Pet</a></li>
         <li data-admin-only hidden><a href="admin-applications.html">Admin: Applications</a></li>
-        <li><a href="chatbot.html">Ask AI</a></li>
       </ul>
 
       <div class="nav-actions">
         <span class="nav-auth" data-auth-nav><a href="login.html" class="btn btn-ghost">Sign In</a></span>
-        <button class="btn btn-primary" type="button" data-action="list-pet">Apply to Adopt</button>
+        <a href="adopt.html" class="btn btn-primary">Apply to Adopt</a>
       </div>
     </nav>
   </header>

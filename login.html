@@ -7,9 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body data-page="login">
+
+  <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -17,17 +20,25 @@
         <img src="images/placeholder.svg" alt="" width="48" height="48" />
         <span class="logo-text">CloudPaw</span>
       </a>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+
+      <button
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+      >
         <span></span><span></span><span></span>
       </button>
+
       <ul id="nav-menu" class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="pets.html">Find a Pet</a></li>
         <li><a href="about.html">About Us</a></li>
-        <li><a href="about.html#contact">Contact Us</a></li>
+        <li><a href="chatbot.html">Ask AI</a></li>
         <li data-admin-only hidden><a href="admin-add.html">Admin: Add Pet</a></li>
         <li data-admin-only hidden><a href="admin-applications.html">Admin: Applications</a></li>
       </ul>
+
       <div class="nav-actions">
         <span class="nav-auth" data-auth-nav><a href="login.html" class="btn btn-ghost">Sign In</a></span>
         <a href="adopt.html" class="btn btn-primary">Apply to Adopt</a>
@@ -35,27 +46,39 @@
     </nav>
   </header>
 
-  <main id="main" style="max-width: 500px; margin: 4rem auto; padding: 0 1rem;">
-    <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Welcome Back</h1>
-    
-    <form id="login-form" class="card" novalidate style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 15px;">
+  <main id="main">
+    <section class="page-header" aria-labelledby="page-heading">
+      <div class="page-header__inner">
+        <h1 id="page-heading">Welcome Back</h1>
+        <p>Sign in to your CloudPaw account.</p>
+      </div>
+    </section>
 
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" autocomplete="email" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
+    <section class="pet-section" aria-label="Sign in form">
+      <form id="login-form" class="form-card form-card--narrow" novalidate>
+        <div class="form-stack">
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" autocomplete="current-password" required style="padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: inherit;" />
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
-      <p id="login-status" class="status" role="status" aria-live="polite"></p>
-    </form>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </div>
+        <p id="login-status" class="status" role="status" aria-live="polite"></p>
+      </form>
 
-    <p style="text-align: center; margin-top: 1.5rem; color: var(--color-muted);">
-      Don't have an account? <a href="signup.html" style="color: var(--color-primary); text-decoration: underline;">Sign up here</a>
-    </p>
+      <p class="form-switch">Don't have an account? <a href="signup.html">Sign up here</a></p>
+    </section>
   </main>
 
-  <footer class="site-footer" id="contact" style="margin-top: 10rem;">
+  <footer class="site-footer">
     <div class="footer-inner">
       <div>
         <h3>CloudPaw</h3>
@@ -64,16 +87,16 @@
       <div>
         <h4>About</h4>
         <ul>
-          <li><a href="#">Our Mission</a></li>
-          <li><a href="#">For Shelters</a></li>
-          <li><a href="#">Privacy</a></li>
+          <li><a href="about.html#mission">Our Mission</a></li>
+          <li><a href="about.html#shelters">For Shelters</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
           <li><a href="mailto:hello@cloudpaw.example">hello@cloudpaw.example</a></li>
-          <li><a href="#">Support</a></li>
+          <li><a href="about.html#contact">Send us a message</a></li>
         </ul>
       </div>
     </div>
