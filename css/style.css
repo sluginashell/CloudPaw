@@ -197,6 +197,23 @@ a:hover {
   gap: var(--space-2);
 }
 
+/* Sign-in area, filled in by script.js: "Sign In", or "Hi, Name · Sign out". */
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.nav-greeting {
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+/* Elements hidden by script.js (admin-only links, admin pages before the
+   sign-in check) must stay hidden even if a class sets display. */
+[hidden] {
+  display: none !important;
+}
+
 /* Hamburger — hidden on desktop */
 .nav-toggle {
   display: none;
@@ -704,7 +721,8 @@ input[aria-invalid="true"] {
     margin-top: var(--space-3);
   }
 
-  .nav-actions .btn {
+  .nav-actions .btn,
+  .nav-auth {
     flex: 1;
   }
 

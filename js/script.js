@@ -108,6 +108,113 @@ function saveAuth(token, user) {
   }
 }
 
+// The saved sign-in, { token, user }, or null when signed out (or storage is blocked).
+function getAuth() {
+  try {
+    const auth = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || "null");
+    return auth && typeof auth.token === "string" && auth.user ? auth : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearAuth() {
+  try {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+  } catch {
+    // Storage blocked: nothing was saved, so nothing to clear.
+  }
+}
+
+// Header for API routes that need sign-in. Empty when signed out.
+function authHeaders() {
+  const auth = getAuth();
+  return auth ? { Authorization: `Bearer ${auth.token}` } : {};
+}
+
+const isAdmin = () => getAuth()?.user.role === "admin";
+
+// Ends the session on the server, forgets it here, and goes to the home page.
+// The token is cleared even if the server can't be reached.
+async function signOut() {
+  const headers = authHeaders();
+  clearAuth();
+  try {
+    await fetch(`${CONFIG.API_BASE}/auth/logout`, { method: "POST", headers });
+  } catch (err) {
+    console.error(err);
+  }
+  window.location.href = "index.html";
+}
+
+// Asks the API who the saved token belongs to and updates the saved user
+// (e.g. a changed role). Returns the user, or null when signed out or the
+// session has expired (the stale token is then cleared). If the API can't be
+// reached, keeps the saved user rather than signing anyone out.
+async function refreshAuth() {
+  const auth = getAuth();
+  if (!auth || CONFIG.USE_LOCAL_DATA) return auth?.user || null;
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/auth/me`, { headers: authHeaders() });
+    if (res.status === 401) {
+      clearAuth();
+      return null;
+    }
+    if (!res.ok) return auth.user;
+    const { user } = await res.json();
+    saveAuth(auth.token, user);
+    return user;
+  } catch {
+    return auth.user;
+  }
+}
+
+// Checked once per page load; the nav and admin pages share the result.
+let authCheck;
+const checkAuth = () => (authCheck ??= refreshAuth());
+
+// Sends the browser to the sign-in page, coming back to this page afterwards.
+function goToSignIn() {
+  const here = window.location.pathname.split("/").pop() || "index.html";
+  window.location.replace(`login.html?next=${encodeURIComponent(here)}`);
+}
+
+// For admin pages: shows the page to a signed-in admin and returns true.
+// Anyone else is sent to the sign-in page and it returns false.
+// (This only hides the page; the API itself refuses non-admins.)
+async function requireAdminPage() {
+  await checkAuth();
+  if (!isAdmin()) {
+    goToSignIn();
+    return false;
+  }
+  document.getElementById("main").hidden = false;
+  return true;
+}
+
+// Where to go after signing in: ?next=<page>.html if given, else the home page.
+// Only plain page names are accepted, so the link can't send people off-site.
+function pageAfterSignIn() {
+  const next = getParam("next");
+  return /^[\w-]+\.html$/.test(next) ? next : "index.html";
+}
+
+// Nav: "Sign In", or "Hi, Name · Sign out"; admin links only for admins.
+function renderAuthNav() {
+  const user = getAuth()?.user;
+  const admin = isAdmin();
+  document.querySelectorAll("[data-admin-only]").forEach((el) => {
+    el.hidden = !admin;
+  });
+  document.querySelectorAll("[data-auth-nav]").forEach((slot) => {
+    slot.innerHTML = user
+      ? `<span class="nav-greeting">Hi, ${escapeHtml(user.name)}</span>
+         <span aria-hidden="true">·</span>
+         <button type="button" class="btn btn-ghost" data-action="sign-out">Sign out</button>`
+      : `<a href="login.html" class="btn btn-ghost">Sign In</a>`;
+  });
+}
+
 // POSTs JSON to an /auth route. Resolves with { ok, body } for any HTTP
 // response; only throws if the server can't be reached.
 async function postAuth(path, data) {
@@ -148,7 +255,8 @@ function clearFieldErrors(form) {
 }
 
 // Wires the sign-in or sign-up form: checks it, posts it, shows errors from the
-// API on the page, and on success saves the session and goes to the home page.
+// API on the page, and on success saves the session and goes to the page in
+// ?next= (e.g. an admin page that sent them here), or else the home page.
 function wireAuthForm({ form, statusEl, path, buildBody, beforeSubmit, onFailure, pendingText }) {
   const setStatus = (message, isError = false) => {
     statusEl.textContent = message;
@@ -180,8 +288,8 @@ function wireAuthForm({ form, statusEl, path, buildBody, beforeSubmit, onFailure
           setStatus("Your browser is blocking site storage, so we can't keep you signed in.", true);
           return;
         }
-        setStatus(`Welcome, ${body.user.name}! Taking you to the home page…`);
-        window.location.href = "index.html";
+        setStatus(`Welcome, ${body.user.name}!`);
+        window.location.href = pageAfterSignIn();
         return;
       }
 
@@ -247,6 +355,29 @@ const petDetailHtml = (pet) => `
       <a class="back-link" href="pets.html">← Back to all pets</a>
     </div>
   </article>`;
+
+// One row on admin-applications.html, from GET /api/inquiries. Every value
+// comes from a public form, so all of it is escaped.
+const STATUS_COLORS = { pending: "orange", approved: "green", denied: "#dc2626" };
+const applicationRowHtml = (app) => {
+  const status = String(app.status || "pending").toLowerCase();
+  const label = status.charAt(0).toUpperCase() + status.slice(1);
+  // Approve/Deny only show an alert for now; nothing is saved yet.
+  const actions = status === "pending"
+    ? `<button type="button" onclick="alert('Application Approved!')" style="background: #22c55e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 5px;">Approve</button>
+       <button type="button" onclick="alert('Application Denied.')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Deny</button>`
+    : `<span style="color: var(--color-muted); font-size: 0.9em;">Completed</span>`;
+  return `
+    <tr style="border-bottom: 1px solid var(--color-border);">
+      <td style="padding: 15px 10px;">${escapeHtml(app.name)}</td>
+      <td style="padding: 15px 10px; font-weight: bold;">${escapeHtml(app.pet_name || `Pet #${app.pet_id}`)}</td>
+      <td style="padding: 15px 10px; color: var(--color-muted);">${escapeHtml(app.email)}</td>
+      <td style="padding: 15px 10px;">
+        <span style="background: ${STATUS_COLORS[status] || "gray"}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">${escapeHtml(label)}</span>
+      </td>
+      <td style="padding: 15px 10px;">${actions}</td>
+    </tr>`;
+};
 
 const skeletons = (count) =>
   Array.from({ length: count }).map(() => `<div class="skeleton"></div>`).join("");
@@ -403,6 +534,12 @@ const pages = {
 
   login() {
     const form = document.getElementById("login-form");
+    // Sent here by an admin page (see goToSignIn).
+    if (getParam("next")) {
+      document.getElementById("login-status").textContent = getAuth()
+        ? "That page is for admins only. Sign in with an admin account to continue."
+        : "Please sign in to continue.";
+    }
     wireAuthForm({
       form,
       statusEl: document.getElementById("login-status"),
@@ -441,6 +578,97 @@ const pages = {
       }),
     });
   },
+
+  // Admin: add a pet with POST /api/pets.
+  async "admin-add"() {
+    if (!(await requireAdminPage())) return;
+    const form = document.getElementById("add-pet-form");
+    const statusEl = document.getElementById("add-pet-status");
+    const submitBtn = form.querySelector("[type=submit]");
+    const setStatus = (message, isError = false) => {
+      statusEl.textContent = message;
+      statusEl.classList.toggle("status--error", isError);
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFieldErrors(form);
+      setStatus("");
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Named fields only: name, species, breed, age, location, description.
+      // (The photo input has no name yet; uploads aren't supported by the API.)
+      const data = Object.fromEntries(new FormData(form));
+      submitBtn.disabled = true;
+      setStatus("Saving…");
+
+      try {
+        const res = await fetch(`${CONFIG.API_BASE}/pets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+
+        if (res.status === 401 || res.status === 403) {
+          // Session expired or no longer an admin: sign in again.
+          if (res.status === 401) clearAuth();
+          goToSignIn();
+          return;
+        }
+        if (res.ok) {
+          form.reset();
+          statusEl.classList.remove("status--error");
+          statusEl.innerHTML = `${escapeHtml(body.name)} was added. <a href="pet.html?id=${encodeURIComponent(body.id)}">View their page</a>`;
+          return;
+        }
+
+        // 400: show each field's message under that field.
+        for (const [field, message] of Object.entries(body.fields || {})) {
+          const input = form.elements[field];
+          if (input) showFieldError(input, message);
+        }
+        setStatus(body.error || "Could not save the pet. Please try again.", true);
+        form.querySelector('[aria-invalid="true"]')?.focus();
+      } catch (err) {
+        console.error(err);
+        setStatus("We couldn't reach the server. Please try again later.", true);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  },
+
+  // Admin: list adoption applications from GET /api/inquiries.
+  async "admin-applications"() {
+    if (!(await requireAdminPage())) return;
+    const tbody = document.getElementById("applications-table");
+    const statusEl = document.getElementById("applications-status");
+    statusEl.textContent = "Loading applications…";
+
+    try {
+      const res = await fetch(`${CONFIG.API_BASE}/inquiries`, { headers: authHeaders() });
+      if (res.status === 401 || res.status === 403) {
+        if (res.status === 401) clearAuth();
+        goToSignIn();
+        return;
+      }
+      if (!res.ok) throw new Error(`Request failed (${res.status}): /inquiries`);
+
+      const apps = await res.json();
+      tbody.innerHTML = apps.map(applicationRowHtml).join("");
+      statusEl.textContent = apps.length
+        ? `${apps.length} ${apps.length === 1 ? "application" : "applications"}.`
+        : "No applications yet.";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Sorry, we couldn't load applications right now. Please try again later.";
+      statusEl.classList.add("status--error");
+    }
+  },
 };
 
 /* ---------- Shared events ---------- */
@@ -464,5 +692,14 @@ els.navToggle?.addEventListener("click", () => {
 /* ---------- Footer year ---------- */
 if (els.year) els.year.textContent = new Date().getFullYear();
 
+// "Sign out" in the nav (rendered by renderAuthNav).
+document.addEventListener("click", (e) => {
+  if (e.target.closest('[data-action="sign-out"]')) signOut();
+});
+
 /* ---------- Boot ---------- */
+// Draw the nav from the saved sign-in right away, then again once the API has
+// confirmed it (an expired session switches back to "Sign In").
+renderAuthNav();
+checkAuth().then(renderAuthNav);
 pages[document.body.dataset.page]?.();
