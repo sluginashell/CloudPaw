@@ -117,6 +117,7 @@ a:hover {
   border: 1px solid transparent;
   border-radius: 999px;
   padding: 0.6rem 1.2rem;
+  white-space: nowrap;
   cursor: pointer;
   transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
@@ -186,6 +187,7 @@ a:hover {
 }
 
 .nav-links a {
+  white-space: nowrap;
   font-family: var(--font-heading);
   font-size: 1rem;
   letter-spacing: 0.02em;
@@ -195,6 +197,23 @@ a:hover {
 .nav-actions {
   display: flex;
   gap: var(--space-2);
+}
+
+/* Tablet / small laptop: when links + "Hi, Name · Sign out" + Apply to Adopt
+   don't fit on one line (e.g. an admin at ~800px), the buttons move to a
+   second row on the right instead of running off the screen. */
+@media (min-width: 769px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: var(--space-2);
+  }
+  .logo {
+    margin-right: auto;
+  }
+  .nav-links {
+    margin-left: 0;
+  }
 }
 
 /* Sign-in area, filled in by script.js: "Sign In", or "Hi, Name · Sign out". */
@@ -383,12 +402,14 @@ a:hover {
 
 /* Inline error under a form field (added by script.js from API responses). */
 .field-error {
-  margin: -8px 0 0;
+  margin: 0;
   color: #dc2626;
   font-size: 0.9em;
 }
 
-input[aria-invalid="true"] {
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
   border-color: #dc2626 !important;
 }
 
@@ -591,6 +612,8 @@ input[aria-invalid="true"] {
 .field input,
 .field select,
 .field textarea {
+  min-width: 0;
+  max-width: 100%;
   font: inherit;
   padding: 0.6rem 0.8rem;
   border: 1px solid var(--color-border);
@@ -617,6 +640,44 @@ input[aria-invalid="true"] {
 
 .field--check input {
   margin-top: 0.3rem;
+}
+
+/* A checkbox's error message goes on its own line under the label. */
+.field--check {
+  flex-wrap: wrap;
+}
+.field--check .field-error {
+  flex-basis: 100%;
+}
+
+.field-hint {
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
+.field input[type="file"] {
+  border-style: dashed;
+  background: var(--color-surface);
+}
+
+/* Single-column form (login, signup). */
+.form-card--narrow {
+  max-width: 480px;
+}
+
+.form-stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* "Don't have an account? Sign up here" under the sign-in forms. */
+.form-switch {
+  margin-top: var(--space-4);
+  color: var(--color-muted);
+}
+.form-switch a {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 .form-actions {
@@ -690,6 +751,81 @@ input[aria-invalid="true"] {
 }
 
 /* ==========================================================================
+   Admin tables (admin-applications.html)
+   ========================================================================== */
+.table-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+/* On narrow screens the table scrolls sideways inside the card, not the page. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--space-3) var(--space-2);
+  vertical-align: middle;
+}
+
+.data-table thead tr {
+  border-bottom: 2px solid var(--color-border);
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table__strong {
+  font-weight: 700;
+}
+
+.data-table__actions {
+  white-space: nowrap;
+}
+
+/* Status pill: Pending / Approved / Denied. */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-muted);
+}
+.badge--pending { background: #b45309; }
+.badge--approved { background: #15803d; }
+.badge--denied { background: #dc2626; }
+
+/* Small Approve / Deny buttons. */
+.btn-small {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 0.9em;
+  color: #fff;
+  cursor: pointer;
+}
+.btn-small + .btn-small {
+  margin-left: 5px;
+}
+.btn-small--approve { background: #16a34a; }
+.btn-small--deny { background: #dc2626; }
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 @media (max-width: 768px) {
@@ -734,70 +870,27 @@ input[aria-invalid="true"] {
     flex-direction: column;
   }
 
+  /* minmax(0, 1fr), not 1fr: lets the column shrink below wide content
+     (e.g. a file input) instead of pushing it out of the card. */
   .pet-detail,
   .contact-layout,
   .form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Signed in: "Hi, Name · Sign out" gets its own row, Apply to Adopt below. */
+  .nav-actions {
+    flex-wrap: wrap;
+  }
+  .nav-auth:has(.nav-greeting) {
+    flex-basis: 100%;
+  }
+  .nav-auth:has(.nav-greeting) .btn {
+    flex: 0 0 auto;
+    margin-left: auto;
   }
 
   .form-card {
     padding: var(--space-4);
   }
-  /* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Hide the modal by default using the hidden attribute */
-.modal[hidden] {
-  display: none !important;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 2rem;
-  border-radius: var(--radius);
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--color-muted);
-}
-
-#adoption-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-#adoption-form label {
-  font-weight: bold;
-  font-size: 0.9rem;
-  margin-bottom: -5px;
-}
-
-#adoption-form input,
-#adoption-form select,
-#adoption-form textarea {
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  font-family: inherit;
-}
 }
