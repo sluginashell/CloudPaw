@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Oswald:wght@300;500&family=Roboto:ital@1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body data-page="admin">
+<body data-page="admin-add">
 
   <header class="site-header">
     <nav class="nav" aria-label="Primary">
@@ -24,28 +24,28 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="pets.html">Find a Pet</a></li>
         <li><a href="about.html">About Us</a></li>
-        <li><a href="admin-add.html">Admin: Add Pet</a></li>
-        <li><a href="admin-applications.html">Admin: Applications</a></li>
+        <li data-admin-only hidden><a href="admin-add.html">Admin: Add Pet</a></li>
+        <li data-admin-only hidden><a href="admin-applications.html">Admin: Applications</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="login.html" class="btn btn-ghost">Sign Out</a>
+        <span class="nav-auth" data-auth-nav><a href="login.html" class="btn btn-ghost">Sign In</a></span>
       </div>
     </nav>
   </header>
 
-  <main id="main" style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
+  <main id="main" hidden style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
     <h1 style="text-align: center; font-family: var(--font-display); margin-bottom: 2rem;">Add a New Pet</h1>
     
     <form id="add-pet-form" class="card" style="background: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
       
       <div style="grid-column: span 2;">
         <label for="pet-name">Pet Name</label>
-        <input type="text" id="pet-name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+        <input type="text" id="pet-name" name="name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
       </div>
 
       <div>
         <label for="pet-species">Species</label>
-        <select id="pet-species" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+        <select id="pet-species" name="species" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
           <option value="Dog">Dog</option>
           <option value="Cat">Cat</option>
           <option value="Other">Other</option>
@@ -54,17 +54,17 @@
 
       <div>
         <label for="pet-breed">Breed</label>
-        <input type="text" id="pet-breed" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+        <input type="text" id="pet-breed" name="breed" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
       </div>
 
       <div>
         <label for="pet-age">Age (Years)</label>
-        <input type="number" id="pet-age" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+        <input type="number" id="pet-age" name="age" required min="0" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
       </div>
 
       <div>
         <label for="pet-location">Location</label>
-        <input type="text" id="pet-location" required placeholder="City, State" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
+        <input type="text" id="pet-location" name="location" required placeholder="City, State" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;" />
       </div>
 
       <div style="grid-column: span 2;">
@@ -74,10 +74,11 @@
 
       <div style="grid-column: span 2;">
         <label for="pet-description">Description</label>
-        <textarea id="pet-description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;"></textarea>
+        <textarea id="pet-description" name="description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;"></textarea>
       </div>
 
       <button type="submit" class="btn btn-primary" style="grid-column: span 2; margin-top: 10px;">Save Pet to Database</button>
+      <p id="add-pet-status" class="status" role="status" aria-live="polite" style="grid-column: span 2;"></p>
     </form>
   </main>
 
@@ -90,40 +91,6 @@
     </div>
     <p class="copyright">© <span id="year"></span> CloudPaw. All rights reserved.</p>
   </footer>
-  <script>
-    document.getElementById("add-pet-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const formData = {
-        name: document.getElementById("pet-name").value,
-        species: document.getElementById("pet-species").value,
-        breed: document.getElementById("pet-breed").value,
-        age: document.getElementById("pet-age").value,
-        location: document.getElementById("pet-location").value,
-        description: document.getElementById("pet-description").value,
-        photo_url: "images/placeholder.svg" 
-      };
-
-      try {
-        const response = await fetch("/api/pets", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
-        });
-
-        if (response.ok) {
-          alert("Pet successfully added to the database!");
-          window.location.href = "admin-applications.html"; 
-        } else {
-          alert("Failed to add pet. Check the console.");
-          console.error(await response.text());
-        }
-      } catch (error) {
-        console.error(error);
-        alert("Network error. Is the server running?");
-      }
-    });
-  </script>
   <script src="js/script.js" defer></script>
 </body>
 </html>

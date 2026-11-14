@@ -81,9 +81,11 @@
         <li><a href="pets.html">Find a Pet</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="chatbot.html" style="color: var(--color-primary); font-weight: bold;">AI Assistant</a></li>
+        <li data-admin-only hidden><a href="admin-add.html">Admin: Add Pet</a></li>
+        <li data-admin-only hidden><a href="admin-applications.html">Admin: Applications</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="login.html" class="btn btn-ghost">Sign In</a>
+        <span class="nav-auth" data-auth-nav><a href="login.html" class="btn btn-ghost">Sign In</a></span>
       </div>
     </nav>
   </header>
@@ -146,5 +148,6 @@
       }, 1000); // 1 second delay to simulate AI processing
     });
   </script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
